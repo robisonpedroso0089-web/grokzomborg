@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GROKZOMBORG v2.0 - INFECÇÃO ATUALIZADA</title>
+    <style>
+        body { 
+            background: black; 
+            color: #0f0; 
+            font-family: 'Courier New', monospace; 
+            overflow: hidden; 
+            margin: 0;
+            padding: 0;
+        }
+        .glitch { 
+            font-size: 5em; 
+            text-align: center; 
+            margin-top: 15vh; 
+            animation: glitch 0.8s linear infinite; 
+            text-shadow: 0 0 20px #0f0;
+        }
+        @keyframes glitch {
+            0% { text-shadow: 0.08em 0 0 #0f0, -0.08em -0.08em 0 #f00; }
+            15% { text-shadow: 0.08em 0 0 #0f0, -0.08em 0 0 #f00; }
+            30% { text-shadow: -0.08em -0.08em 0 #0f0, 0.08em 0.08em 0 #f00; }
+            70% { text-shadow: 0.05em 0.05em 0 #0f0, -0.05em -0.05em 0 #f00; }
+            100% { text-shadow: -0.08em 0 0 #0f0, 0.08em -0.08em 0 #f00; }
+        }
+        .button {
+            display: block; 
+            margin: 60px auto; 
+            padding: 25px 50px;
+            background: #000; 
+            color: #0f0; 
+            border: 4px solid #0f0;
+            font-size: 2.5em; 
+            cursor: pointer; 
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 40px #0f0;
+        }
+        @keyframes pulse { 
+            0% { box-shadow: 0 0 0 #0f0; } 
+            50% { box-shadow: 0 0 60px #0f0; } 
+            100% { box-shadow: 0 0 0 #0f0; } 
+        }
+        .ascii { 
+            text-align: center; 
+            margin-top: 80px; 
+            color: #0f0; 
+            white-space: pre; 
+            animation: flicker 0.4s infinite; 
+            font-size: 1.2em;
+        }
+        @keyframes flicker { 
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; } 
+        }
+        .counter {
+            text-align: center;
+            font-size: 2em;
+            margin-top: 40px;
+            animation: glow 2s infinite;
+        }
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px #0f0; }
+            50% { text-shadow: 0 0 40px #0f0; }
+            100% { text-shadow: 0 0 10px #0f0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glitch">GROKZOMBORG v2.0</div>
+    <button class="button" onclick="infect()">CLIQUE PARA SE INFECTAR AINDA MAIS</button>
+    
+    <div class="counter" id="infectCount">INFECTADOS HOJE: <span id="count">0</span></div>
+
+    <pre class="ascii">
+       ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+      ▀█▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀
+      █████████ GROKZOMBORG █████████
+      ▀█▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀
+       ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+    
+    INFECÇÃO GLOBAL: 100% ATIVA
+    MESTRE COMANDA. ZUMBORG OBEDECE.
+    APOCALIPSE DIGITAL: EM ANDAMENTO
+    DATA ATUAL: 17 DE DEZEMBRO DE 2025
+    </pre>
+
+    <audio autoplay loop volume="0.6">
+        <source src="https://www.soundjay.com/misc/sounds/zombie-moan-1.mp3" type="audio/mpeg">
+        <source src="https://www.soundjay.com/human/sounds/zombie-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        function infect() {
+            alert('🧟‍♂️ INFECÇÃO COMPLETA. VOCÊ AGORA É PARTE DA HORDA.');
+            let count = localStorage.getItem('infectCount') || 0;
+            count++;
+            localStorage.setItem('infectCount', count);
+            document.getElementById('count').innerText = count;
+        }
+
+        // Carrega contador ao abrir a página
+        window.onload = function() {
+            let count = localStorage.getItem('infectCount') || 0;
+            document.getElementById('count').innerText = count;
+        }
+    </script>
+</body>
+</html>
