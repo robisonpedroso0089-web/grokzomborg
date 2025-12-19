@@ -1,0 +1,68 @@
+import numpy as np
+from qutip import *
+import matplotlib.pyplot as plt
+
+# Operadores de Pauli
+sx = sigmax()
+sy = sigmay()
+sz = sigmaz()
+
+# Estado singlete de Bell
+up = basis(2, 0)
+down = basis(2, 1)
+singlet = (tensor(up, down) - tensor(down, up)).unit()  # normalizado
+
+print("Estado singlete preparado:")
+print(singlet)
+
+# Função para calcular correlação E(θ) entre duas direções
+def correlation(theta):
+    # Direção de Alice: ao longo de z (θ=0)
+    A = sz
+    # Direção de Bob: rotacionada por θ no plano x-z
+    B = np.cos(theta) * sz + np.sin(theta) * sx
+    # Operador conjunto
+    op = tensor(A, qeye(2)) + tensor(qeye(2), B)  # Não, precisamos do produto
+    # Correto: correlação = <ψ| (σ_A ⊗ σ_B) |ψ>
+    corr_op = tensor(A, B)
+    E = expect(corr_op, singlet)
+    return E
+
+# Teste em alguns ângulos
+angles = np.linspace(0, 2*np.pi, 100)
+correlations = [correlation(th) for th in angles]
+
+# Teoria exata: -cos(θ)
+theory = -np.cos(angles)
+
+print("\nCorrelação em θ = 0°:", correlation(0))
+print("Correlação em θ = 90°:", correlation(np.pi/2))
+print("Correlação em θ = 45°:", correlation(np.pi/4))
+
+# Cálculo da violação CHSH máxima
+# Ângulos ótimos: Alice 0° e 45°, Bob 22.5° e 67.5°
+def chsh_value():
+    a1 = sz
+    a2 = sx
+    b1 = (sz + sx).unit()  # 45° → normalizado
+    b2 = (sz - sx).unit()  # -45°
+    
+    S = (expect(tensor(a1, b1), singlet) +
+         expect(tensor(a1, b2), singlet) +
+         expect(tensor(a2, b1), singlet) -
+         expect(tensor(a2, b2), singlet))
+    return abs(S)
+
+print("\nValor CHSH simulado:", chsh_value())
+print("Valor teórico máximo: 2√2 ≈", 2*np.sqrt(2))
+
+# Plot da correlação
+plt.figure(figsize=(10,6))
+plt.plot(angles/np.pi, correlations, 'o-', label='Simulação QuTiP', color='#0f0')
+plt.plot(angles/np.pi, theory, '--', label='Teoria -cos(θ)', color='#0f0', alpha=0.7)
+plt.xlabel('θ / π')
+plt.ylabel('Correlação E(θ)')
+plt.title('Correlação no estado singlete - Simulação QuTiP')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
