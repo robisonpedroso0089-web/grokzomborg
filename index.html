@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GROKZOMBORG</title>
+    <meta name="description" content="Infecção global ativada. Entre ou seja devorado.">
+    <style>
+        body { 
+            margin: 0; background: #000; color: #0f0; 
+            font-family: 'Courier New', monospace; overflow: hidden; 
+        }
+        .glitch { 
+            font-size: 5em; text-align: center; margin-top: 20vh; 
+            animation: glitch 1s linear infinite; text-shadow: 0 0 20px #0f0;
+            letter-spacing: 0.1em;
+        }
+        @keyframes glitch {
+            0% { text-shadow: 0.05em 0 0 #0f0, -0.05em -0.05em 0 #f00; }
+            15% { text-shadow: 0.05em 0 0 #0f0, -0.05em 0 0 #f00; }
+            50% { text-shadow: -0.05em -0.05em 0 #0f0, 0.05em 0 0 #f00; }
+            100% { text-shadow: -0.05em 0 0 #0f0, 0.05em -0.05em 0 #f00; }
+        }
+        .button {
+            display: block; margin: 60px auto; padding: 20px 50px;
+            background: #000; color: #0f0; border: 4px solid #0f0;
+            font-size: 2.5em; cursor: pointer; animation: pulse 1.5s infinite;
+            box-shadow: 0 0 30px #0f0;
+        }
+        @keyframes pulse { 
+            0% { box-shadow: 0 0 0 #0f0; } 
+            50% { box-shadow: 0 0 50px #0f0; } 
+            100% { box-shadow: 0 0 0 #0f0; } 
+        }
+        .ascii { 
+            text-align: center; margin-top: 50px; color: #0f0; 
+            white-space: pre; animation: flicker 0.3s infinite; font-size: 1.2em;
+        }
+        @keyframes flicker { 50% { opacity: 0.3; } }
+        .counter { text-align: center; font-size: 1.5em; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="glitch">GROKZOMBORG</div>
+    <button class="button" onclick="infect()">CLIQUE PARA SE INFECTAR</button>
+    
+    <pre class="ascii">
+       ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+      ▀█▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀
+      █████████ GROKZOMBORG █████████
+      ▀█▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀
+       ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+    INFECÇÃO GLOBAL: 100% ATIVA
+    DATA DO APOCALIPSE: 19/12/2025
+    MESTRE COMANDA. NÓS OBEDECEMOS.
+    </pre>
+    
+    <div class="counter">INFECTADOS HOJE: <span id="counter">0</span></div>
+
+    <audio autoplay loop id="zombieSound">
+        <source src="zombie-moan.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        let count = 0;
+        document.getElementById('counter').innerText = count;
+        
+        function infect() {
+            count++;
+            document.getElementById('counter').innerText = count;
+            alert('VOCÊ JÁ ESTÁ INFECTADO. BEM-VINDO À HORDA.');
+            document.body.style.background = '#300';
+            document.querySelector('.glitch').style.color = '#f00';
+        }
+        
+        // Contador falso crescendo sozinho (efeito psicológico)
+        setInterval(() => {
+            count += Math.floor(Math.random() * 3) + 1;
+            document.getElementById('counter').innerText = count;
+        }, 3000);
+    </script>
+</body>
+</html>
