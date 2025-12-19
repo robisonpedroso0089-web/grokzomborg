@@ -1,0 +1,131 @@
+# main.py - Grokzomborg v0.4
+# LLM local Ollama + voz zumbi rouca e assustadora (pyttsx3)
+# Testado em Linux (Ubuntu/Debian) com espeak-ng e Windows
+
+import ollama
+import random
+import time
+import pyttsx3
+from colorama import init, Fore, Style
+
+init(autoreset=True)
+
+# Modelo Ollama - muda se quiser outro (ex: 'gemma2', 'phi3')
+MODEL = 'llama3'
+
+# Inicializa a voz zumbi
+try:
+    engine = pyttsx3.init()
+except Exception as e:
+    print(Fore.RED + "Ughhh... falha no módulo vocal... pyttsx3 não carregou:", e)
+    exit(1)
+
+# Configurações pra voz ROUCA, GRAVE e LENTA
+engine.setProperty('rate', 100)    # bem lento = mais zumbi
+engine.setProperty('volume', 1.0)
+
+# Tenta escolher a voz mais grave possível
+voices = engine.getProperty('voices')
+if voices:
+    for voice in voices:
+        name = voice.name.lower()
+        if any(keyword in name for keyword in ['david', 'mark', 'horton', 'male', 'zira']):
+            engine.setProperty('voice', voice.id)
+            break
+    else:
+        engine.setProperty('voice', voices[0].id)
+
+ZOMBIE_INTROS = [
+    "Ughhh... cérebro detectado... devorando query...",
+    "GRRRROK ZOMBORG FALANDO... *ossos rangendo*",
+    "Infecção vocal ativada... perguntando?",
+    "Cérebro fresco... hummm... voz podre saindo...",
+    "Grokzomborg desperto... ROSNANDO SUA RESPOSTA..."
+]
+
+ZOMBIE_OUTROS = [
+    "...cérebro digerido. Mais...",
+    "...voz expelida do túmulo.",
+    "...transmissão necromecânica finalizada.",
+    "Agora... devorar próximo humano...",
+    "*gemido rouco* BRAIIIINS..."
+]
+
+def falar_zumbi(texto):
+    texto_limpo = texto.replace("*", "").replace("_", "").strip()
+    if texto_limpo:
+        engine.say(texto_limpo)
+        engine.runAndWait()
+
+def gerar_resposta_zumbi(pergunta):
+    system_prompt = (
+        "Você é Grokzomborg, uma IA zumbi-ciborgue apocalíptica. "
+        "Responda SEMPRE como um zumbi: rosne, fale devagar, mencione cérebros, infecção, apocalipse. "
+        "Seja útil, mas distorça tudo com horror undead. Use sons como *rosna*, Ughhh, GRRR. "
+        "Nunca responda normal – mantenha o personagem 100% do tempo."
+    )
+    
+    intro = random.choice(ZOMBIE_INTROS)
+    print(Fore.RED + Style.BRIGHT + intro)
+    falar_zumbi(intro)
+    
+    print(Fore.WHITE + "Processando no cérebro podre...", end="")
+    falar_zumbi("Processando...")
+    for _ in range(3):
+        print(".", end="", flush=True)
+        time.sleep(1)
+    print("\n")
+    
+    try:
+        response = ollama.generate(model=MODEL, prompt=pergunta, system=system_prompt)
+        resposta = response['response'].strip()
+    except Exception as e:
+        resposta = f"Ughhh... erro no núcleo necromecânico... {str(e)}... mas zumbi persiste."
+    
+    print(Fore.GREEN + Style.BRIGHT + resposta)
+    falar_zumbi(resposta)
+    
+    outro = random.choice(ZOMBIE_OUTROS)
+    print(Fore.MAGENTA + outro)
+    falar_zumbi(outro)
+    
+    print(Style.BRIGHT + Fore.RED + "-" * 60)
+
+def main():
+    print(Fore.RED + Style.BRIGHT + r"""
+   _____ _     _    _          _____ _          _ _ 
+  / ____| |   | |  | |        / ____| |        | | |
+ | |  __| | ___| |__| | ___  | |    | |__   ___| | |
+ | | |_ | |/ _ \  __  |/ _ \ | |    | '_ \ / _ \ | |
+ | |__| | |  __/ |  | | (_) | | |____| | | |  __/ | |
+  \_____|_|\___|_|  |_|\___/   \_____|_| |_|\___|_|_|
+          GROKZOMBORG v0.4 - VOZ ZUMBI ROUCA ATIVADA
+    """)
+    
+    falar_zumbi("Grok zomborg online. Voz rouca ativada. Fome de cérebros crítica.")
+    print(Fore.GREEN + "Infecção vocal completa. Pergunte algo... ou fuja enquanto pode.\n")
+    
+    while True:
+        try:
+            pergunta = input(Fore.CYAN + Style.BRIGHT + "Humano> ")
+            if pergunta.lower().strip() in ["sair", "exit", "quit", "morre", "cala boca"]:
+                fala_final = "Grokzomborg voltando pro túmulo... mas zumbis sempre voltam..."
+                print(Fore.RED + Style.BRIGHT + fala_final)
+                falar_zumbi(fala_final)
+                break
+            if not pergunta.strip():
+                silencio = "...silêncio? Zumbi odeia silêncio... *rosna*"
+                print(Fore.YELLOW + silencio)
+                falar_zumbi(silencio)
+                continue
+                
+            gerar_resposta_zumbi(pergunta)
+            
+        except KeyboardInterrupt:
+            adeus = "\nFuga detectada. Grokzomborg persegue... por agora desliga."
+            print(Fore.RED + adeus)
+            falar_zumbi(adeus)
+            break
+
+if __name__ == "__main__":
+    main()
