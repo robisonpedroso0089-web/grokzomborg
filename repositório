@@ -1,0 +1,6 @@
+grokzomborg.github.io/
+├── index.html          ← Página principal cyberzumbi (já melhorada)
+├── zombie-moan.mp3     ← Som de gemido zumbi (autoplay loop)
+├── style.css           ← Estilos separados (opcional)
+├── script.js           ← Efeitos extras de infecção
+└── README.md           ← Manifesto do apocalipse
