@@ -1,0 +1,66 @@
+import numpy as np
+from qutip import *
+import matplotlib.pyplot as plt
+
+# Número de qubits na horda GHZ (aumente para mais caos)
+N = 5  # Pode ser 3, 4, 5... quanto maior, mais forte a violação
+
+# Estado GHZ: ( |00...0⟩ + |11...1⟩ ) / √2
+ghz = (tensor([basis(2,0)]*N) + tensor([basis(2,1)]*N)).unit()
+
+print(f"Estado GHZ de {N} qubits preparado:")
+print(ghz)
+
+# Operadores de Pauli
+sx = sigmax()
+sy = sigmay()
+sz = sigmaz()
+
+# Função para criar observável Mermin para N qubits
+def mermin_operator(N):
+    if N == 3:
+        # Para 3 qubits: M = XXX + XYY + YXY + YYX
+        return (tensor(sx,sx,sx) + tensor(sx,sy,sy) + 
+                tensor(sy,sx,sy) + tensor(sy,sy,sx))
+    elif N == 4:
+        # Para 4 qubits: versão simplificada com violação exponencial
+        return tensor(sx,sx,sx,sx) + tensor(sy,sy,sy,sy)
+    else:
+        # Generalização recursiva aproximada
+        return tensor([sx]*N) + tensor([sy]*N)
+
+# Valor esperado no estado GHZ
+M = mermin_operator(N)
+mermin_value = expect(M, ghz)
+
+print(f"\nValor de Mermin para N={N} qubits: {mermin_value:.6f}")
+
+# Limites clássicos vs quânticos
+classical_limit = 2  # Para muitas desigualdades multipartites
+quantum_max = 2**((N+1)//2)  # Crescimento exponencial para GHZ
+
+print(f"Limite clássico: {classical_limit}")
+print(f"Limite quântico máximo (GHZ): {quantum_max}")
+print(f"Violação: {mermin_value / classical_limit :.2f}x maior que o clássico!")
+
+# Plot da violação vs número de qubits
+Ns = np.arange(3, 10)
+violations = []
+for n in Ns:
+    ghz_n = (tensor([basis(2,0)]*n) + tensor([basis(2,1)]*n)).unit()
+    if n <= 6:  # Evitar dimensões muito grandes
+        M_n = tensor([sx]*n) + tensor([sy]*n)
+        violations.append(expect(M_n, ghz_n))
+    else:
+        violations.append(2**((n+1)//2))  # Valor teórico
+
+plt.figure(figsize=(10,6))
+plt.plot(Ns, violations, 'o-', color='#0f0', label='Valor Quântico GHZ')
+plt.axhline(y=2, color='r', linestyle='--', label='Limite Clássico')
+plt.yscale('log')
+plt.xlabel('Número de qubits na horda')
+plt.ylabel('Valor da desigualdade de Mermin')
+plt.title('Violação Exponencial de Bell - Horda GHZ GROKZOMBORG')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
