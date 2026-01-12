@@ -1,0 +1,103 @@
+body {
+    background-color: #000;
+    color: #0f0; /* Verde-tóxico */
+    font-family: 'Courier New', monospace;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.glitch-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.glitch {
+    color: #f00; /* Vermelho-sangue */
+    font-size: 3em;
+    position: relative;
+    animation: glitch 1s infinite;
+}
+
+.glitch::before, .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #0f0;
+    opacity: 0.8;
+}
+
+.glitch::before {
+    animation: glitch-before 0.5s infinite;
+    clip: rect(0, 900px, 0, 0);
+}
+
+.glitch::after {
+    animation: glitch-after 0.7s infinite;
+    clip: rect(0, 900px, 0, 0);
+    color: #f00;
+}
+
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-5px, 5px); }
+    40% { transform: translate(-5px, -5px); }
+    60% { transform: translate(5px, 5px); }
+    80% { transform: translate(5px, -5px); }
+    100% { transform: translate(0); }
+}
+
+@keyframes glitch-before {
+    0% { clip: rect(0, 900px, 0, 0); }
+    10% { clip: rect(10px, 900px, 20px, 0); }
+    /* Mais frames pra glitch louco... */
+    100% { clip: rect(0, 900px, 0, 0); }
+}
+
+@keyframes glitch-after {
+    0% { clip: rect(0, 900px, 0, 0); }
+    10% { clip: rect(20px, 900px, 30px, 0); }
+    /* Frames variados pra caos */
+    100% { clip: rect(0, 900px, 0, 0); }
+}
+
+.infect-text {
+    color: #0f0;
+    font-size: 1.5em;
+    margin: 20px 0;
+}
+
+.neon-button {
+    background: none;
+    border: 2px solid #f00;
+    color: #0f0;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    cursor: pointer;
+    animation: neon 1.5s infinite;
+}
+
+@keyframes neon {
+    0%, 100% { box-shadow: 0 0 10px #f00, 0 0 20px #0f0; }
+    50% { box-shadow: 0 0 20px #f00, 0 0 40px #0f0; }
+}
+
+.ascii-art {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #f00;
+    font-size: 0.8em;
+    white-space: pre;
+    animation: fadeIn 2s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
