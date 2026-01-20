@@ -1,0 +1,7 @@
+// contador-zumborg.js
+let infectados = 666; // número inicial do apocalipse
+
+setInterval(() => {
+  infectados += Math.floor(Math.random() * 13) + 1;
+  document.getElementById('contador').innerText = infectados.toLocaleString() + " INFECTADOS";
+}, 4500);
