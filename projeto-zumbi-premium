@@ -1,0 +1,6 @@
+mkdir -p projeto-zumbi-premium/{audio,scripts,premium/{audios_completos,capas},docs,viral}
+cd projeto-zumbi-premium
+touch README.md .gitignore scripts/gerar_glitch.py docs/plano_vendas_2026.md viral/captions.txt
+echo "premium/" >> .gitignore
+echo "*.mp3" >> .gitignore   # se quiser esconder tudo, ou só os completos
+echo "node_modules/" >> .gitignore
