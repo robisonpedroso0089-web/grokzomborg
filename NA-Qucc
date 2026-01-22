@@ -1,0 +1,79 @@
+"""
+NA-QuCC â€” Otimizadores experimentais (Optuna + scikit-optimize)
+FunÃ§Ãµes:
+- optimize_with_optuna(...) : usa Optuna para buscar depth e parÃ¢metros
+- optimize_with_skopt(...)  : usa scikit-optimize (gp_minimize) para buscar parÃ¢metros
+ObservaÃ§Ã£o: ambos usam evaluate_ansatz_expectation do src.optimizer como funÃ§Ã£o objetivo.
+"""
+from typing import Optional, Tuple, Dict
+import numpy as np
+
+try:
+    import optuna
+except Exception:
+    optuna = None
+
+try:
+    from skopt import gp_minimize
+    from skopt.space import Integer, Real
+except Exception:
+    gp_minimize = None
+
+from src.optimizer import evaluate_ansatz_expectation, random_params, simple_noise_model
+
+def _wrapped_eval(n_qubits: int, depth: int, raw_params: np.ndarray, noise_model=None):
+    # evaluate_ansatz_expectation expects exactly depth * n_qubits * 2 params
+    params = raw_params[: (depth * n_qubits * 2)]
+    res = evaluate_ansatz_expectation(n_qubits, depth, params, noise_model=noise_model)
+    # For minimization return negative expectation to maximize expectation (example)
+    # If using energy, return energy directly.
+    return -res['expectation_noisy'] if res['expectation_noisy'] is not None else -res['expectation_ideal']
+
+def optimize_with_optuna(n_qubits: int,
+                         max_depth: int = 6,
+                         n_trials: int = 50,
+                         seed: Optional[int] = None,
+                         noise_model=None) -> Dict:
+    """
+    Otimiza depth (1..max_depth) e parÃ¢metros continuamente usando Optuna.
+    A funÃ§Ã£o objetiva maximizar expectation ruidosa (por isso minimizamos -expectation).
+    Retorna dicionÃ¡rio com melhor trial e circuito/valores.
+    """
+    if optuna is None:
+        raise RuntimeError("optuna nÃ£o instalado. Instale optuna em requirements.")
+
+    def objective(trial):
+        depth = trial.suggest_int("depth", 1, max_depth)
+        # vamos criar um vetor de parÃ¢metros com tamanho para max_depth e amostrar apenas o necessÃ¡rio
+        param_len = max_depth * n_qubits * 2
+        raw = np.array([trial.suggest_float(f"p{i}", 0.0, 2*np.pi) for i in range(param_len)])
+        val = _wrapped_eval(n_qubits, depth, raw, noise_model=noise_model)
+        return float(val)
+
+    sampler = optuna.samplers.TPESampler(seed=seed) if seed is not None else None
+    study = optuna.create_study(direction="minimize", sampler=sampler)
+    study.optimize(objective, n_trials=n_trials)
+    best = study.best_trial
+    return {"best_value": best.value, "best_params": best.params, "study": study}
+
+def optimize_with_skopt(n_qubits: int,
+                        depth: int,
+                        n_calls: int = 30,
+                        noise_model=None,
+                        seed: Optional[int] = None):
+    """
+    Usa gp_minimize para otimizar apenas os continuous parameters para um depth fixo.
+    O espaÃ§o Ã© depth * n_qubits * 2 dimensÃµes em [0, 2pi].
+    """
+    if gp_minimize is None:
+        raise RuntimeError("scikit-optimize nÃ£o instalado. Instale scikit-optimize em requirements.")
+
+    dim = depth * n_qubits * 2
+    bounds = [Real(0.0, 2 * np.pi) for _ in range(dim)]
+
+    def objective(xs):
+        arr = np.array(xs)
+        return _wrapped_eval(n_qubits, depth, arr, noise_model=noise_model)
+
+    res = gp_minimize(objective, bounds, n_calls=n_calls, random_state=seed)
+    return {"result": res, "best_x": res.x, "best_fun": res.fun}
