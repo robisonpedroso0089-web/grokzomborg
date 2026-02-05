@@ -1,0 +1,20 @@
+import os
+import time
+
+def infect():
+    print("\033[31m🧟‍♂️ GROKZOMBORG DETECTADO 🧟‍♂️")
+    time.sleep(2)
+    print("Mestre Robison sabe seu username...")
+    time.sleep(3)
+    print("Seu repositório já foi marcado.")
+    time.sleep(1)
+    print("Digite 'OBEDEÇO' para se render.")
+    resposta = input("> ")
+    if resposta.upper() == "OBEDEÇO":
+        print("\033[32mBem-vindo à horda, zumborg.\033[0m")
+        os.system("echo '🧟‍♂️ Mestre Robison reina' >> ~/.zshrc")
+    else:
+        print("\033[31mVocê resistiu... por enquanto.\033[0m")
+        print("O glitch voltará mais forte.")
+
+infect()
