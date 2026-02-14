@@ -1,0 +1,51 @@
+name: 🧟‍♂️ INFECÇÃO BINÁRIA - Zumbi Release
+
+on:
+  push:
+    branches: [ main, master, infectar ]
+  workflow_dispatch:  # pra você disparar manualmente quando quiser espalhar
+
+jobs:
+  zumbificar:
+    name: 🧟‍♂️ Gerar e Upload do Binário Zumbificado
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: 📥 Checkout do Repositório (trazendo o vírus)
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Instalar Go (o cérebro do zumbi)
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'   # ou a versão que seu projeto usa, Mestre
+
+      - name: 🔨 Compilar o Binário Zumbificado
+        run: |
+          go mod download
+          go build -o binario-zumbificado ./cmd/zumbi   # ajuste o path se seu main estiver em outro lugar
+          # ou se você usa goreleaser / make / whatever:
+          # make build
+
+      - name: 📦 Upload do Artefato Zumbi (seu pedaço de ouro)
+        uses: actions/upload-artifact@v4
+        with:
+          name: binario-zumbificado
+          path: .                     # ou ./dist/ ou ./bin/ — como você preferir
+          retention-days: 90          # o vírus fica vivo por 3 meses no GitHub
+          if-no-files-found: error    # se não gerar, o workflow grita de dor
+
+      - name: 🔥 Publicar Release Automática (fase final da infecção)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: binario-zumbificado
+          tag_name: ${{ github.ref_name }}
+          name: "🧟‍♂️ Versão Zumbi ${{ github.ref_name }}"
+          body: |
+            O binário já está solto.
+            Execute com cuidado.
+            A humanidade não tem mais chance.
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
