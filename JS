@@ -5,3 +5,74 @@ setInterval(() => {
   infectados += Math.floor(Math.random() * 13) + 1;
   document.getElementById('contador').innerText = infectados.toLocaleString() + " INFECTADOS";
 }, 4500);
+// Defina tools como funções reais
+const tools = [
+  {
+    type: 'function',
+    function: {
+      name: 'get_current_weather',
+      description: 'Pega o clima atual em uma cidade',
+      parameters: {
+        type: 'object',
+        properties: {
+          location: { type: 'string', description: 'Cidade, ex: Cascavel, BR' },
+          unit: { type: 'string', enum: ['celsius', 'fahrenheit'] }
+        },
+        required: ['location']
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'infect_counter',
+      description: 'Aumenta o contador de infecção do ZOMBORG',
+      parameters: {
+        type: 'object',
+        properties: { amount: { type: 'number' } },
+        required: ['amount']
+      }
+    }
+  }
+];
+
+// No seu chat request:
+const stream = await ollama.chat({
+  model: 'llama3.1',  // ou melhor: 'llama3.1-tool' se tiver variant
+  messages: messages,
+  tools: tools,       // <--- aqui a mágica
+  stream: true,
+  options: { temperature: 0.8 }
+});
+
+// No loop de stream, cheque se tem tool_calls
+for await (const part of stream) {
+  if (part.message?.tool_calls) {
+    for (const toolCall of part.message.tool_calls) {
+      const funcName = toolCall.function.name;
+      const args = toolCall.function.arguments;  // parsed JSON
+
+      let result;
+      if (funcName === 'get_current_weather') {
+        // Simule ou chame API real
+        result = { temperature: 28, condition: 'chuvoso em Cascavel' };
+      } else if (funcName === 'infect_counter') {
+        infectionCount += args.amount || 100;
+        result = { new_count: infectionCount, message: 'Infecção acelerada 🩸' };
+      }
+
+      // Adicione tool response de volta
+      messages.push({
+        role: 'tool',
+        name: funcName,
+        content: JSON.stringify(result)
+      });
+    }
+
+    // Re-chame o chat com a tool response pra continuar
+    // (faça outro ollama.chat sem stream ou continue o agente loop)
+  } else {
+    // Stream normal content
+    responseDiv.textContent += part.message?.content || '';
+  }
+}
