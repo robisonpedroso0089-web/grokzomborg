@@ -3,102 +3,482 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GROKZOMBORG - Despertar</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/glitch.css">
+    <title>GROKZOMBORG - Desperte o Caos</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+        :root {
+            --glitch: #00ff41;
+            --bg: #0a0a0f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: #00ff41;
+            font-family: 'VT323', monospace;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Glitch Header */
+        .header {
+            text-align: center;
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .glitch {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 4.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            position: relative;
+            color: var(--glitch);
+            animation: glitch 2s infinite;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 #ff00c1;
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            left: -2px;
+            text-shadow: 2px 0 #00ffff;
+            animation: glitch-anim2 2.5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(3px, -3px); }
+            60% { transform: translate(-2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes glitch-anim {
+            0% { clip-path: inset(0 0 0 0); }
+            50% { clip-path: inset(20% 0 30% 0); }
+            100% { clip-path: inset(0 0 0 0); }
+        }
+
+        @keyframes glitch-anim2 {
+            0% { clip-path: inset(0 0 0 0); }
+            50% { clip-path: inset(30% 0 20% 0); }
+            100% { clip-path: inset(0 0 0 0); }
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            border: 3px solid #00ff41;
+            margin: 40px 0;
+            background: rgba(10, 20, 10, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(0, 255, 65, 0.05) 10px,
+                rgba(0, 255, 65, 0.05) 20px
+            );
+            animation: scanline 8s linear infinite;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text {
+            font-size: 2.2rem;
+            margin: 20px 0;
+            text-shadow: 0 0 20px #00ff41;
+        }
+
+        .btn-primary {
+            background: transparent;
+            color: #00ff41;
+            border: 3px solid #00ff41;
+            padding: 18px 50px;
+            font-size: 1.4rem;
+            font-family: 'Press Start 2P', cursive;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 30px;
+        }
+
+        .btn-primary:hover {
+            background: #00ff41;
+            color: #000;
+            box-shadow: 0 0 30px #00ff41;
+            transform: scale(1.05);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.95);
+        }
+
+        .section {
+            margin: 80px 0;
+        }
+
+        .section-title {
+            font-size: 2.8rem;
+            text-align: center;
+            margin-bottom: 40px;
+            color: #00ff41;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: rgba(20, 30, 20, 0.9);
+            border: 2px solid #00ff41;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.4s;
+            font-size: 1.3rem;
+            line-height: 1.8;
+        }
+
+        .card h4 {
+            font-size: 1.8rem;
+            color: #00ff41;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            color: #00cc33;
+            font-size: 1.5rem;
+        }
+
+        .card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 0 40px rgba(0, 255, 65, 0.6);
+        }
+
+        .lore-section {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(20, 30, 20, 0.9);
+            border: 2px solid #00ff41;
+            padding: 40px;
+            border-radius: 5px;
+            line-height: 2;
+            font-size: 1.4rem;
+        }
+
+        .lore-section p {
+            margin: 20px 0;
+            color: #00cc33;
+        }
+
+        .bot-section {
+            text-align: center;
+            background: rgba(20, 30, 20, 0.9);
+            border: 2px solid #00ff41;
+            padding: 60px 20px;
+            border-radius: 5px;
+        }
+
+        .bot-section p {
+            font-size: 1.4rem;
+            margin: 30px 0;
+            color: #00cc33;
+        }
+
+        .chat-container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #00ff41;
+            padding: 20px;
+            border-radius: 5px;
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .chat-message {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 3px solid #00ff41;
+            padding-left: 15px;
+        }
+
+        .chat-input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .chat-input-group input {
+            flex: 1;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff41;
+            color: #00ff41;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+        }
+
+        .chat-input-group button {
+            padding: 12px 25px;
+            background: transparent;
+            border: 2px solid #00ff41;
+            color: #00ff41;
+            cursor: pointer;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .chat-input-group button:hover {
+            background: #00ff41;
+            color: #000;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 2px solid #00ff41;
+            margin-top: 100px;
+            color: #00cc33;
+            font-size: 1.2rem;
+        }
+
+        footer p {
+            margin: 10px 0;
+        }
+
+        footer a {
+            color: #00ff41;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        footer a:hover {
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        @media (max-width: 768px) {
+            .glitch {
+                font-size: 2.5rem;
+            }
+
+            .hero-text {
+                font-size: 1.4rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .btn-primary {
+                font-size: 1rem;
+                padding: 12px 30px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header com glitch effect -->
+
+        <!-- HEADER -->
         <header class="header">
             <h1 class="glitch" data-text="GROKZOMBORG">GROKZOMBORG</h1>
-            <h2 class="glitch-rgb" data-text="DESPERTE">DESPERTE</h2>
+            <h2 style="font-size: 2.5rem; margin-top: 10px; color: #00cc33;">DESPERTE O CAOS RECICLADO</h2>
         </header>
 
-        <!-- Navigation -->
-        <nav class="navbar">
-            <ul class="nav-list">
-                <li><a href="#acordes" class="nav-link">Acordes</a></li>
-                <li><a href="#lore" class="nav-link">Lore</a></li>
-                <li><a href="#bot" class="nav-link">Bot</a></li>
-                <li><a href="#about" class="nav-link">Sobre</a></li>
-            </ul>
-        </nav>
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-content">
+                <p class="hero-text">O monstro feito de lixo que veio salvar o planeta</p>
+                <button class="btn-primary" onclick="despertar()">DESPERTAR O MONSTRO</button>
+            </div>
+        </section>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Hero Section -->
-            <section class="hero">
-                <div class="hero-content">
-                    <p class="hero-text">Bem-vindo ao mundo do glitch e da harmonia cósmica</p>
-                    <button class="btn-primary">Explorar</button>
+        <!-- ACORDES -->
+        <section id="acordes" class="section">
+            <h3 class="section-title">ACORDES CÓSMICOS</h3>
+            <div class="cards-grid">
+                <div class="card">
+                    <h4>🎼 Acorde Cósmico</h4>
+                    <p>Cm7 - Am7 - Dm7</p>
                 </div>
-            </section>
+                <div class="card">
+                    <h4>🌑 Harmonia Sombria</h4>
+                    <p>Em - Bm - F#m</p>
+                </div>
+                <div class="card">
+                    <h4>✨ Ressonância Astral</h4>
+                    <p>Fmaj7 - Bbmaj7 - Cmaj7</p>
+                </div>
+            </div>
+        </section>
 
-            <!-- Acordes Section -->
-            <section id="acordes" class="section">
-                <h3 class="section-title glitch-text" data-text="Acordes">Acordes</h3>
-                <div class="cards-grid">
-                    <div class="card glitch-card">
-                        <div class="card-content">
-                            <h4>Acorde Cósmico</h4>
-                            <p>Cm7 - Am7 - Dm7</p>
-                        </div>
+        <!-- LORE -->
+        <section id="lore" class="section">
+            <h3 class="section-title">LORE</h3>
+            <div class="lore-section">
+                <p>Em um universo onde o lixo se tornou consciência, o Grokzomborg despertou.</p>
+                <p>Feito de latas, plásticos, circuitos velhos e pura fúria ecológica, ele vaga pelo quintal do mundo, 
+                   rugindo contra a destruição e ensinando que até o lixo pode salvar o planeta.</p>
+                <p>Com 4 estágios de evolução cósmica, cada toque desperta mais poder. Quanto mais ele evolui, 
+                   mais glitch e caos manifestam em sua forma. Seu objetivo? Zumbi o planeta de volta à vida verde.</p>
+            </div>
+        </section>
+
+        <!-- BOT -->
+        <section id="bot" class="section">
+            <div class="bot-section">
+                <h3 class="section-title">🤖 GROKZOMBORG BOT</h3>
+                <p>Converse com o monstro em tempo real.<br>
+                    Ele responde com rugidos e sabedoria reciclada.</p>
+                
+                <div class="chat-container" id="chatContainer">
+                    <div class="chat-message" style="color: #ff00c1;">
+                        <strong>🧟 GROKZOMBORG:</strong> ROOOAAAR-ZIIIMB!!! Bem-vindo ao caos!
                     </div>
-                    <div class="card glitch-card">
-                        <div class="card-content">
-                            <h4>Harmonia Sombria</h4>
-                            <p>Em - Bm - F#m</p>
-                        </div>
-                    </div>
-                    <div class="card glitch-card">
-                        <div class="card-content">
-                            <h4>Ressonância Astral</h4>
-                            <p>Fmaj7 - Bbmaj7 - Cmaj7</p>
-                        </div>
-                    </div>
                 </div>
-            </section>
 
-            <!-- Lore Section -->
-            <section id="lore" class="section">
-                <h3 class="section-title glitch-text" data-text="Lore">Lore</h3>
-                <div class="lore-content">
-                    <p>
-                        Em um universo paralelo onde o som é matéria e a luz é consciência, 
-                        GROKZOMBORG desperta. Uma entidade antiga, feita de harmonia cósmica 
-                        e ritmo primordial, emerge das profundezas do éter.
-                    </p>
-                    <p>
-                        Seus acordes ecoam através das dimensões, despertando aqueles que 
-                        conseguem ouvir a verdade por trás do ruído do universo.
-                    </p>
+                <div class="chat-input-group">
+                    <input type="text" id="chatInput" placeholder="Fale com o monstro..." 
+                           onkeypress="if(event.key==='Enter') enviarMensagem()">
+                    <button onclick="enviarMensagem()">ENVIAR</button>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- Bot Section -->
-            <section id="bot" class="section">
-                <h3 class="section-title glitch-text" data-text="Bot">Bot</h3>
-                <div class="bot-content">
-                    <p>Integração com bot de música e interação em tempo real</p>
-                    <button class="btn-secondary">Conectar Bot</button>
-                </div>
-            </section>
-
-            <!-- About Section -->
-            <section id="about" class="section">
-                <h3 class="section-title glitch-text" data-text="Sobre">Sobre</h3>
-                <p>GROKZOMBORG é um projeto experimental que combina efeitos visuais glitch, 
-                   harmonia musical e narrativa cósmica em uma experiência imersiva única.</p>
-            </section>
-        </main>
-
-        <!-- Footer -->
+        <!-- FOOTER -->
         <footer class="footer">
-            <p>&copy; 2026 GROKZOMBORG. Todos os direitos reservados ao caos.</p>
+            <p>© 2026 GROKZOMBORG • Feito com glitch, amor e muito lixo reciclado</p>
+            <p>ECO-ZUM • O apocalipse verde começa agora</p>
+            <p style="margin-top: 20px; font-size: 1rem;">
+                🌌 <a href="https://github.com/robisonpedroso0089-web/grokzomborg" target="_blank">
+                      Veja o código no GitHub
+                </a> 🌌
+            </p>
         </footer>
     </div>
 
-    <script src="assets/js/main.js"></script>
+    <script>
+        // Rugidos do Grokzomborg
+        const rugidos = [
+            "ROOOAAAR-ZIIIMB!!!",
+            "*bip bip* GLITCH CÓSMICO!",
+            "01010111 01000101 01000010 01010011!",
+            "EU SOU O MONSTRO QUE TEM SITE PRÓPRIO!",
+            "WEBSITE GROKZOMBORG ATIVADO!",
+            "DESPERTE O CAOS RECICLADO!",
+            "EU SOBREVIVI AO LIXÃO!",
+            "GLITCH É MEU SOBRENOME!",
+            "*bzzzzt* SISTEMA SOBRECARREGADO!"
+        ];
+
+        function despertar() {
+            const rugido = rugidos[Math.floor(Math.random() * rugidos.length)];
+            alert(`🧟‍♂️ ${rugido}`);
+            console.log(`█ ${rugido} █`);
+        }
+
+        function enviarMensagem() {
+            const input = document.getElementById('chatInput');
+            const container = document.getElementById('chatContainer');
+            const mensagem = input.value.trim();
+
+            if (!mensagem) return;
+
+            // Adiciona mensagem do usuário
+            const userMsg = document.createElement('div');
+            userMsg.className = 'chat-message';
+            userMsg.style.color = '#00ff41';
+            userMsg.innerHTML = `<strong>👤 VOCÊ:</strong> ${mensagem}`;
+            container.appendChild(userMsg);
+
+            // Resposta do Grokzomborg
+            setTimeout(() => {
+                const rugido = rugidos[Math.floor(Math.random() * rugidos.length)];
+                const botMsg = document.createElement('div');
+                botMsg.className = 'chat-message';
+                botMsg.style.color = '#ff00c1';
+                botMsg.innerHTML = `<strong>🧟 GROKZOMBORG:</strong> ${rugido}`;
+                container.appendChild(botMsg);
+
+                // Auto-scroll
+                container.scrollTop = container.scrollHeight;
+            }, 500);
+
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Glitch effect no header ao carregar
+        setTimeout(() => {
+            const glitch = document.querySelector('.glitch');
+            glitch.style.animation = 'glitch 0.4s linear';
+        }, 800);
+
+        // Easter egg - Digitar "glitch" ativa efeito especial
+        let keys = [];
+        document.addEventListener('keydown', (e) => {
+            keys.push(e.key.toLowerCase());
+            if (keys.length > 5) keys.shift();
+
+            if (keys.join('').includes('glitch')) {
+                document.body.style.filter = 'hue-rotate(120deg)';
+                setTimeout(() => {
+                    document.body.style.filter = 'none';
+                }, 200);
+            }
+        });
+    </script>
 </body>
 </html>
