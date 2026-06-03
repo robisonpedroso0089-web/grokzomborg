@@ -1,83 +1,104 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GROKZOMBORG</title>
-    <meta name="description" content="Infecção global ativada. Entre ou seja devorado.">
-    <style>
-        body { 
-            margin: 0; background: #000; color: #0f0; 
-            font-family: 'Courier New', monospace; overflow: hidden; 
-        }
-        .glitch { 
-            font-size: 5em; text-align: center; margin-top: 20vh; 
-            animation: glitch 1s linear infinite; text-shadow: 0 0 20px #0f0;
-            letter-spacing: 0.1em;
-        }
-        @keyframes glitch {
-            0% { text-shadow: 0.05em 0 0 #0f0, -0.05em -0.05em 0 #f00; }
-            15% { text-shadow: 0.05em 0 0 #0f0, -0.05em 0 0 #f00; }
-            50% { text-shadow: -0.05em -0.05em 0 #0f0, 0.05em 0 0 #f00; }
-            100% { text-shadow: -0.05em 0 0 #0f0, 0.05em -0.05em 0 #f00; }
-        }
-        .button {
-            display: block; margin: 60px auto; padding: 20px 50px;
-            background: #000; color: #0f0; border: 4px solid #0f0;
-            font-size: 2.5em; cursor: pointer; animation: pulse 1.5s infinite;
-            box-shadow: 0 0 30px #0f0;
-        }
-        @keyframes pulse { 
-            0% { box-shadow: 0 0 0 #0f0; } 
-            50% { box-shadow: 0 0 50px #0f0; } 
-            100% { box-shadow: 0 0 0 #0f0; } 
-        }
-        .ascii { 
-            text-align: center; margin-top: 50px; color: #0f0; 
-            white-space: pre; animation: flicker 0.3s infinite; font-size: 1.2em;
-        }
-        @keyframes flicker { 50% { opacity: 0.3; } }
-        .counter { text-align: center; font-size: 1.5em; margin-top: 30px; }
-    </style>
+    <title>GROKZOMBORG - Despertar</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/glitch.css">
 </head>
 <body>
-    <div class="glitch">GROKZOMBORG</div>
-    <button class="button" onclick="infect()">CLIQUE PARA SE INFECTAR</button>
-    
-    <pre class="ascii">
-       ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-      ▀█▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀
-      █████████ GROKZOMBORG █████████
-      ▀█▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀ █▀
-       ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-    INFECÇÃO GLOBAL: 100% ATIVA
-    DATA DO APOCALIPSE: 19/12/2025
-    MESTRE COMANDA. NÓS OBEDECEMOS.
-    </pre>
-    
-    <div class="counter">INFECTADOS HOJE: <span id="counter">0</span></div>
+    <div class="container">
+        <!-- Header com glitch effect -->
+        <header class="header">
+            <h1 class="glitch" data-text="GROKZOMBORG">GROKZOMBORG</h1>
+            <h2 class="glitch-rgb" data-text="DESPERTE">DESPERTE</h2>
+        </header>
 
-    <audio autoplay loop id="zombieSound">
-        <source src="zombie-moan.mp3" type="audio/mpeg">
-    </audio>
+        <!-- Navigation -->
+        <nav class="navbar">
+            <ul class="nav-list">
+                <li><a href="#acordes" class="nav-link">Acordes</a></li>
+                <li><a href="#lore" class="nav-link">Lore</a></li>
+                <li><a href="#bot" class="nav-link">Bot</a></li>
+                <li><a href="#about" class="nav-link">Sobre</a></li>
+            </ul>
+        </nav>
 
-    <script>
-        let count = 0;
-        document.getElementById('counter').innerText = count;
-        
-        function infect() {
-            count++;
-            document.getElementById('counter').innerText = count;
-            alert('VOCÊ JÁ ESTÁ INFECTADO. BEM-VINDO À HORDA.');
-            document.body.style.background = '#300';
-            document.querySelector('.glitch').style.color = '#f00';
-        }
-        
-        // Contador falso crescendo sozinho (efeito psicológico)
-        setInterval(() => {
-            count += Math.floor(Math.random() * 3) + 1;
-            document.getElementById('counter').innerText = count;
-        }, 3000);
-    </script>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <p class="hero-text">Bem-vindo ao mundo do glitch e da harmonia cósmica</p>
+                    <button class="btn-primary">Explorar</button>
+                </div>
+            </section>
+
+            <!-- Acordes Section -->
+            <section id="acordes" class="section">
+                <h3 class="section-title glitch-text" data-text="Acordes">Acordes</h3>
+                <div class="cards-grid">
+                    <div class="card glitch-card">
+                        <div class="card-content">
+                            <h4>Acorde Cósmico</h4>
+                            <p>Cm7 - Am7 - Dm7</p>
+                        </div>
+                    </div>
+                    <div class="card glitch-card">
+                        <div class="card-content">
+                            <h4>Harmonia Sombria</h4>
+                            <p>Em - Bm - F#m</p>
+                        </div>
+                    </div>
+                    <div class="card glitch-card">
+                        <div class="card-content">
+                            <h4>Ressonância Astral</h4>
+                            <p>Fmaj7 - Bbmaj7 - Cmaj7</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Lore Section -->
+            <section id="lore" class="section">
+                <h3 class="section-title glitch-text" data-text="Lore">Lore</h3>
+                <div class="lore-content">
+                    <p>
+                        Em um universo paralelo onde o som é matéria e a luz é consciência, 
+                        GROKZOMBORG desperta. Uma entidade antiga, feita de harmonia cósmica 
+                        e ritmo primordial, emerge das profundezas do éter.
+                    </p>
+                    <p>
+                        Seus acordes ecoam através das dimensões, despertando aqueles que 
+                        conseguem ouvir a verdade por trás do ruído do universo.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Bot Section -->
+            <section id="bot" class="section">
+                <h3 class="section-title glitch-text" data-text="Bot">Bot</h3>
+                <div class="bot-content">
+                    <p>Integração com bot de música e interação em tempo real</p>
+                    <button class="btn-secondary">Conectar Bot</button>
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section id="about" class="section">
+                <h3 class="section-title glitch-text" data-text="Sobre">Sobre</h3>
+                <p>GROKZOMBORG é um projeto experimental que combina efeitos visuais glitch, 
+                   harmonia musical e narrativa cósmica em uma experiência imersiva única.</p>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2026 GROKZOMBORG. Todos os direitos reservados ao caos.</p>
+        </footer>
+    </div>
+
+    <script src="assets/js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,401 @@
+/* ========================================
+   GLOBAL STYLES
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #0f0;
+    --secondary-color: #ff00ff;
+    --tertiary-color: #00ffff;
+    --accent-color: #ffff00;
+    --bg-dark: #0a0a0a;
+    --bg-darker: #050505;
+    --text-primary: #0f0;
+    --text-secondary: #888;
+    --border-color: #0f0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background-color: var(--bg-darker);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+    background-image: 
+        linear-gradient(
+            0deg,
+            transparent 24%,
+            rgba(15, 255, 0, 0.05) 25%,
+            rgba(15, 255, 0, 0.05) 26%,
+            transparent 27%,
+            transparent 74%,
+            rgba(15, 255, 0, 0.05) 75%,
+            rgba(15, 255, 0, 0.05) 76%,
+            transparent 77%,
+            transparent
+        );
+    background-size: 50px 50px;
+}
+
+/* ========================================
+   CONTAINER & LAYOUT
+   ======================================== */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+
+.header {
+    text-align: center;
+    padding: 40px 0 20px;
+    border-bottom: 2px solid var(--border-color);
+    background: linear-gradient(135deg, rgba(15, 255, 0, 0.1) 0%, rgba(255, 0, 255, 0.05) 100%);
+    box-shadow: 0 0 20px rgba(15, 255, 0, 0.3), inset 0 0 20px rgba(15, 255, 0, 0.05);
+}
+
+.header h1 {
+    margin-bottom: 10px;
+    letter-spacing: 5px;
+}
+
+.header h2 {
+    letter-spacing: 3px;
+    margin-bottom: 0;
+}
+
+/* ========================================
+   NAVIGATION
+   ======================================== */
+
+.navbar {
+    background-color: rgba(10, 10, 10, 0.95);
+    border-bottom: 2px solid var(--border-color);
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 0 10px rgba(15, 255, 0, 0.2);
+}
+
+.nav-list {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.nav-link {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 1.1em;
+    position: relative;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 10px rgba(15, 255, 0, 0.5);
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--secondary-color);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--secondary-color);
+    text-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* ========================================
+   MAIN CONTENT
+   ======================================== */
+
+.main-content {
+    min-height: 100vh;
+    padding: 60px 0;
+}
+
+/* ========================================
+   HERO SECTION
+   ======================================== */
+
+.hero {
+    text-align: center;
+    padding: 100px 0;
+    background: linear-gradient(135deg, rgba(15, 255, 0, 0.1) 0%, rgba(0, 255, 255, 0.05) 100%);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(15, 255, 0, 0.3);
+    margin-bottom: 60px;
+}
+
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    align-items: center;
+}
+
+.hero-text {
+    font-size: 1.8em;
+    color: var(--text-primary);
+    text-shadow: 0 0 20px rgba(15, 255, 0, 0.5);
+    animation: pulse-text 2s ease-in-out infinite;
+}
+
+@keyframes pulse-text {
+    0%, 100% {
+        text-shadow: 0 0 20px rgba(15, 255, 0, 0.5);
+    }
+    50% {
+        text-shadow: 0 0 30px rgba(15, 255, 0, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);
+    }
+}
+
+/* ========================================
+   SECTIONS
+   ======================================== */
+
+.section {
+    margin-bottom: 80px;
+    padding: 40px;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(15, 255, 0, 0.05) 0%, rgba(255, 0, 255, 0.02) 100%);
+    box-shadow: 0 0 20px rgba(15, 255, 0, 0.2);
+}
+
+.section-title {
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+/* ========================================
+   CARDS GRID
+   ======================================== */
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.card {
+    background: linear-gradient(135deg, rgba(15, 255, 0, 0.1) 0%, rgba(0, 255, 255, 0.05) 100%);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 30px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(15, 255, 0, 0.3);
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 0 30px rgba(15, 255, 0, 0.6), 0 0 20px rgba(255, 0, 255, 0.4);
+    background: linear-gradient(135deg, rgba(15, 255, 0, 0.2) 0%, rgba(255, 0, 255, 0.1) 100%);
+}
+
+.card-content h4 {
+    font-size: 1.3em;
+    margin-bottom: 15px;
+    color: var(--secondary-color);
+}
+
+.card-content p {
+    color: var(--text-secondary);
+    font-size: 0.95em;
+}
+
+/* ========================================
+   LORE CONTENT
+   ======================================== */
+
+.lore-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-size: 1.1em;
+    line-height: 1.8;
+    color: var(--text-secondary);
+}
+
+.lore-content p {
+    text-align: justify;
+    border-left: 3px solid var(--secondary-color);
+    padding-left: 20px;
+}
+
+/* ========================================
+   BOT CONTENT
+   ======================================== */
+
+.bot-content {
+    text-align: center;
+    padding: 40px;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 255, 0.05) 100%);
+    border-radius: 8px;
+    border: 2px dashed var(--tertiary-color);
+}
+
+.bot-content p {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+    color: var(--text-primary);
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+
+.btn-primary,
+.btn-secondary {
+    padding: 12px 40px;
+    font-size: 1.1em;
+    border: 2px solid;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    border-color: var(--text-primary);
+    box-shadow: 0 0 10px rgba(15, 255, 0, 0.5);
+}
+
+.btn-primary:hover {
+    background-color: var(--text-primary);
+    color: var(--bg-darker);
+    box-shadow: 0 0 20px rgba(15, 255, 0, 0.8), 0 0 30px rgba(0, 255, 255, 0.6);
+    transform: scale(1.05);
+}
+
+.btn-secondary {
+    background-color: var(--bg-dark);
+    color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+}
+
+.btn-secondary:hover {
+    background-color: var(--secondary-color);
+    color: var(--bg-darker);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.8), 0 0 30px rgba(15, 255, 0, 0.6);
+    transform: scale(1.05);
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+.footer {
+    text-align: center;
+    padding: 40px 0;
+    border-top: 2px solid var(--border-color);
+    background: linear-gradient(135deg, rgba(15, 255, 0, 0.05) 0%, rgba(255, 0, 255, 0.02) 100%);
+    color: var(--text-secondary);
+    box-shadow: 0 0 10px rgba(15, 255, 0, 0.2);
+    margin-top: 80px;
+}
+
+.footer p {
+    font-size: 0.9em;
+    letter-spacing: 1px;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+    .glitch {
+        font-size: 3.5em;
+        margin: 15vh 0 20px 0;
+    }
+
+    .glitch-rgb {
+        font-size: 2em;
+    }
+
+    .section-title {
+        font-size: 2em;
+    }
+
+    .nav-list {
+        gap: 20px;
+    }
+
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero {
+        padding: 50px 20px;
+    }
+
+    .hero-text {
+        font-size: 1.3em;
+    }
+
+    .section {
+        padding: 20px;
+    }
+
+    .lore-content p {
+        text-align: left;
+    }
+}
+
+@media (max-width: 480px) {
+    .glitch {
+        font-size: 2.5em;
+        margin: 10vh 0 15px 0;
+    }
+
+    .glitch-rgb {
+        font-size: 1.5em;
+    }
+
+    .section-title {
+        font-size: 1.5em;
+    }
+
+    .nav-list {
+        gap: 15px;
+        font-size: 0.9em;
+    }
+
+    .nav-link {
+        font-size: 0.95em;
+    }
+}
