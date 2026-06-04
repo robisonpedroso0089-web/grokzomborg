@@ -1,4 +1,23 @@
-kivy==2.2.1
-requests==2.31.0
-pillow==10.0.0
-opencv-python==4.8.0.74
+# 🌍 GROKZOMBORG - Requirements
+# ROOOAAAR! Dependências do projeto
+
+# Core Framework
+kivy==2.3.0
+
+# Audio (ROOOAAAR!)
+pydub>=0.25.1
+
+# Build & Distribution
+buildozer>=1.4.11
+Cython>=0.29.36
+
+# Optional: AR/Vision (futuro)
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# Utilities
+requests>=2.31.0
+pillow>=10.0.0
+
+# Android specific (ROOOAAAR!)
+pyjnius>=1.4.4
