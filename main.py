@@ -1,194 +1,299 @@
-# main.py - GROKZOMBORG BOT + OLLAMA INTEGRADO!
-# ROOOAAAR-ZIIIMB!!! O monstro agora tem INTELIGÊNCIA REAL com Ollama!
+"""
+🌍 GROKZOMBORG - O Monstro Ciborgue Ecológico! 🌍
+ROOOAAAR-ZIIIMB!!!
 
+Um aplicativo interativo de educação ambiental em Kivy.
+Toque para evoluir o monstro e aprenda sobre reciclagem!
+
+Desenvolvedor: Especialista em Kivy/Python
+Tema: Cyber-punk Verde, Glitch e Apocalipse Ecológico
+"""
+
+import os
+import random
 from kivy.app import App
 from kivy.uix.widget import Widget
-from kivy.graphics import Color, Ellipse, Line, Rectangle
-from kivy.clock import Clock
-from kivy.core.audio import SoundLoader
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.image import Image
 from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
+from kivy.core.window import Window
+from kivy.properties import NumericProperty, StringProperty
+from kivy.clock import Clock
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.scrollview import ScrollView
-import requests
-import random
-import threading
+from kivy.uix.popup import Popup
+from kivy.core.audio import SoundLoader
+from kivy.graphics import Color, Ellipse, Line
+from kivy.animation import Animation
 
-class GrokzomborgWidget(Widget):
+# ROOOAAAR! Configurações da Janela
+Window.size = (540, 960)
+Window.clearcolor = (0.05, 0.15, 0.08, 1)  # Verde escuro cyber-punk
+
+# ROOOAAAR! Diretórios de Assets
+ASSETS_DIR = os.path.join(os.path.dirname(__file__), 'assets')
+SOUNDS_DIR = os.path.join(ASSETS_DIR, 'sounds')
+IMAGES_DIR = os.path.join(ASSETS_DIR, 'images')
+
+
+class Grokzomborg(Widget):
+    """
+    ROOOAAAR! O monstro ciborgue principal!
+    Evolui através de 4 níveis ao ser tocado.
+    Possui movimento automático com colisão.
+    """
+    
+    evolution_level = NumericProperty(1)
+    tap_count = NumericProperty(0)
+    roar_text = StringProperty("ROOOAAAR-ZIIIMB!!!")
+    
+    # Configurações de movimento
+    velocity_x = 3
+    velocity_y = 2
+    
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.evolucao = 3
-
-        self.rugidos = [
-            "OLLAMA CONECTADO!",
-            "*bip bip* IA DO MONSTRO ATIVADA!",
-            "01001111 01001100 01001100 01000001 01001101 01000001!",
-            "EU SOU O GROKZOMBORG COM INTELIGÊNCIA!"
-        ]
-
-        self.sons = [
-            SoundLoader.load('data/sounds/roar1.wav'),
-            SoundLoader.load('data/sounds/roar2.wav'),
-            SoundLoader.load('data/sounds/roar3.wav'),
-            SoundLoader.load('data/sounds/roar4.wav')
-        ]
-        for s in self.sons:
-            if s: s.volume = 1.3
-
-        with self.canvas.before:
-            Color(0.003, 0.08, 0.01, 1)
-            self.bg = Rectangle(pos=self.pos, size=self.size)
-
-        self.bind(size=self.atualizar_fundo, pos=self.atualizar_fundo)
-
-        self.x = self.width / 2
-        self.y = self.height / 2
-        self.vx = random.choice([-6, 6])
-        self.vy = random.choice([-6, 6])
-
-        self.desenhar()
-        Clock.schedule_interval(self.update, 1/60.0)
-        self.tocar_som()
-
-        # === INTERFACE DO BOT COM OLLAMA ===
-        main_layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
-
-        # Monstro no topo
-        self.status = Label(
-            text="🤖 GROKZOMBORG + OLLAMA\n(Verifique se Ollama está rodando em localhost:11434)",
-            font_size='26sp',
-            color=(0, 1, 0.6, 1),
-            size_hint_y=0.15
-        )
-
-        # Área de chat rolável
-        self.chat_scroll = ScrollView(size_hint=(1, 0.55))
-        self.chat = Label(
-            text="Bem-vindo! Pergunte qualquer coisa ao Grokzomborg...\n\n",
-            font_size='24sp',
-            color=(0, 1, 0.4, 1),
-            size_hint_y=None,
-            halign='left',
-            valign='top'
-        )
-        self.chat.bind(size=self.chat.setter('text_size'))
-        self.chat_scroll.add_widget(self.chat)
-
-        # Input e botão
-        input_layout = BoxLayout(orientation='horizontal', size_hint_y=0.15, spacing=10)
-        self.input = TextInput(
-            multiline=False,
-            font_size='24sp',
-            hint_text="Digite sua pergunta aqui..."
-        )
-        btn = Button(text="ENVIAR PARA OLLAMA", font_size='22sp', background_color=(0, 0.8, 0.3, 1))
-        btn.bind(on_press=self.chamar_ollama)
-
-        input_layout.add_widget(self.input)
-        input_layout.add_widget(btn)
-
-        main_layout.add_widget(self.status)
-        main_layout.add_widget(self.chat_scroll)
-        main_layout.add_widget(input_layout)
-
-        self.add_widget(main_layout)
-
-    def atualizar_fundo(self, *args):
-        self.bg.pos = self.pos
-        self.bg.size = self.size
-
-    def desenhar(self):
-        self.canvas.clear()
-        with self.canvas:
-            Color(0, 0.92, 0.35, 1)
-            tam = 170
-            Ellipse(pos=(self.x-tam/2, self.y-tam/2), size=(tam, tam))
-
-            Color(1, 0.1, 0.2, 1)
-            olho = 48
-            Ellipse(pos=(self.x-olho-35, self.y+45), size=(olho, olho*1.75))
-            Ellipse(pos=(self.x+35, self.y+45), size=(olho, olho*1.75))
-
-            Color(0.7, 1, 0.4, 1)
-            Line(points=[self.x+60, self.y-50, self.x+155, self.y-165], width=18, cap='round')
-
-            # Glitch forte quando usando IA
-            if self.evolucao >= 2:
-                Color(0, 1, 0.6, random.uniform(0.4, 0.9))
-                for _ in range(28):
-                    Line(points=[self.x + random.randint(-160,160),
-                                self.y + random.randint(-160,160),
-                                self.x + random.randint(-160,160),
-                                self.y + random.randint(-160,160)],
-                         width=random.randint(3,9))
-
-    def update(self, dt):
-        self.x += self.vx
-        self.y += self.vy
-        if self.x < 140 or self.x > self.width - 140: self.vx *= -1
-        if self.y < 140 or self.y > self.height - 230: self.vy *= -1
-        self.desenhar()
-
-    def tocar_som(self):
-        som = self.sons[self.evolucao]
-        if som: som.play()
-
-    def chamar_ollama(self, instance):
-        pergunta = self.input.text.strip()
-        if not pergunta:
-            return
-
-        self.chat.text += f"\n\nVocê: {pergunta}"
-        self.input.text = ""
-        self.evolucao = (self.evolucao + 1) % 4
-        self.tocar_som()
-
-        # Resposta "pensando"
-        self.chat.text += "\n\nGrokzomborg: Pensando... ROOOAAAR..."
-
-        # Thread para não travar a interface
-        threading.Thread(target=self.processar_ollama, args=(pergunta,), daemon=True).start()
-
-    def processar_ollama(self, pergunta):
-        try:
-            response = requests.post(
-                "http://localhost:11434/api/chat",
-                json={
-                    "model": "llama3",        # ou mistral, gemma, etc
-                    "messages": [
-                        {"role": "system", "content": "Você é Grokzomborg, um monstro ciborgue ecológico. Responda de forma divertida, com rugidos, emojis de lixo/reciclagem e tom apocalíptico verde. Sempre termine com ROOOAAAR!"},
-                        {"role": "user", "content": pergunta}
-                    ],
-                    "stream": False
-                },
-                timeout=30
-            )
-
-            if response.status_code == 200:
-                resposta = response.json()["message"]["content"]
+        self.size_hint = (1, 1)
+        self.pos_hint = {'x': 0, 'y': 0}
+        
+        # ROOOAAAR! Efeitos glitch
+        self.glitch_intensity = 0
+        self.glitch_offset_x = 0
+        self.glitch_offset_y = 0
+        
+        # Sons (ROOOAAAR!)
+        self.roar_sounds = {}
+        self._load_sounds()
+        
+        # Variáveis de movimento
+        self.monster_x = 200
+        self.monster_y = 400
+        self.monster_size = 150
+        
+        # Bind ao toque
+        self.bind(size=self._update_canvas)
+        
+        # Clock para movimento automático
+        Clock.schedule_interval(self._update_movement, 1/60)  # 60fps
+        Clock.schedule_interval(self._update_glitch, 0.05)  # Efeito glitch
+        
+        self._draw_canvas()
+    
+    def _load_sounds(self):
+        """ROOOAAAR! Carrega os sons de rugido"""
+        for i in range(1, 5):
+            sound_file = os.path.join(SOUNDS_DIR, f'roar{i}.wav')
+            if os.path.exists(sound_file):
+                try:
+                    self.roar_sounds[i] = SoundLoader.load(sound_file)
+                except Exception as e:
+                    print(f"⚠️ Erro ao carregar roar{i}.wav: {e}")
             else:
-                resposta = "Erro ao conectar com Ollama. Verifique se ele está rodando."
-        except:
-            resposta = "Não consegui conectar com Ollama. Rode 'ollama serve' no terminal!"
-
-        # Atualiza na thread principal
-        Clock.schedule_once(lambda dt: self.mostrar_resposta(resposta), 0)
-
-    def mostrar_resposta(self, resposta):
-        self.chat.text += f"\n\nGrokzomborg: {resposta}\n"
-        self.tocar_som()
-
+                print(f"⚠️ Som não encontrado: {sound_file}")
+    
+    def _draw_canvas(self):
+        """ROOOAAAR! Desenha o monstro e efeitos glitch na tela"""
+        self.canvas.clear()
+        
+        with self.canvas:
+            # Fundo glitch (efeito cyber-punk)
+            Color(0.1, 0.3, 0.15, 0.3)
+            Ellipse(pos=(self.monster_x + self.glitch_offset_x - 30,
+                        self.monster_y + self.glitch_offset_y - 30),
+                   size=(self.monster_size + 60, self.monster_size + 60))
+            
+            # Corpo do monstro (cor muda por nível)
+            colors = [
+                (0.2, 0.8, 0.3),   # Nível 1: Verde claro
+                (0.1, 0.9, 0.4),   # Nível 2: Verde brilhante
+                (0.0, 1.0, 0.5),   # Nível 3: Verde neon
+                (0.8, 0.2, 0.9),   # Nível 4: Roxo cyber (final evolution!)
+            ]
+            
+            color = colors[min(self.evolution_level - 1, 3)]
+            Color(*color, 0.9)
+            
+            # Corpo principal
+            Ellipse(pos=(self.monster_x + self.glitch_offset_x,
+                        self.monster_y + self.glitch_offset_y),
+                   size=(self.monster_size, self.monster_size))
+            
+            # Olhos glitch (ROOOAAAR!)
+            Color(1, 1, 0, 0.8)  # Amarelo neon
+            eye_offset = self.monster_size * 0.25
+            Ellipse(pos=(self.monster_x + eye_offset + self.glitch_offset_x,
+                        self.monster_y + eye_offset + self.glitch_offset_y),
+                   size=(20, 20))
+            Ellipse(pos=(self.monster_x + self.monster_size - eye_offset - 20 + self.glitch_offset_x,
+                        self.monster_y + eye_offset + self.glitch_offset_y),
+                   size=(20, 20))
+            
+            # Aura glitch intensifica com evolution (ROOOAAAR!)
+            if self.evolution_level > 1:
+                Color(*color, 0.3)
+                Line(circle=(self.monster_x + self.monster_size/2 + self.glitch_offset_x,
+                            self.monster_y + self.monster_size/2 + self.glitch_offset_y,
+                            self.monster_size * 0.6), width=2)
+            
+            if self.evolution_level > 2:
+                Line(circle=(self.monster_x + self.monster_size/2 + self.glitch_offset_x,
+                            self.monster_y + self.monster_size/2 + self.glitch_offset_y,
+                            self.monster_size * 0.8), width=1)
+            
+            if self.evolution_level > 3:
+                Color(0.8, 0.2, 0.9, 0.5)
+                Line(circle=(self.monster_x + self.monster_size/2 + self.glitch_offset_x,
+                            self.monster_y + self.monster_size/2 + self.glitch_offset_y,
+                            self.monster_size), width=3)
+    
+    def _update_canvas(self, instance, value):
+        """ROOOAAAR! Atualiza canvas quando tamanho muda"""
+        self._draw_canvas()
+    
+    def _update_movement(self, dt):
+        """ROOOAAAR! Atualiza movimento automático com colisão"""
+        self.monster_x += self.velocity_x
+        self.monster_y += self.velocity_y
+        
+        # Colisão com bordas
+        if self.monster_x <= 0 or self.monster_x + self.monster_size >= self.width:
+            self.velocity_x *= -1
+            self.roar()  # ROOOAAAR ao bater!
+        
+        if self.monster_y <= 0 or self.monster_y + self.monster_size >= self.height:
+            self.velocity_y *= -1
+            self.roar()  # ROOOAAAR ao bater!
+        
+        self._draw_canvas()
+    
+    def _update_glitch(self, dt):
+        """ROOOAAAR! Atualiza efeito glitch visual"""
+        if self.glitch_intensity > 0:
+            self.glitch_offset_x = random.randint(-5, 5) * self.glitch_intensity
+            self.glitch_offset_y = random.randint(-5, 5) * self.glitch_intensity
+            self.glitch_intensity *= 0.95  # Fade out
+        else:
+            self.glitch_offset_x = 0
+            self.glitch_offset_y = 0
+    
     def on_touch_down(self, touch):
-        self.x = touch.x
-        self.y = touch.y
-        return True
+        """ROOOAAAR! Toque na tela evoluui o monstro!"""
+        # Verifica se tocou no monstro
+        monster_rect = (self.monster_x, self.monster_y,
+                       self.monster_size, self.monster_size)
+        
+        if (monster_rect[0] <= touch.x <= monster_rect[0] + monster_rect[2] and
+            monster_rect[1] <= touch.y <= monster_rect[1] + monster_rect[3]):
+            
+            self.tap_count += 1
+            self.glitch_intensity = 2  # ROOOAAAR! Glitch forte!
+            self.roar()
+            
+            # Evolui a cada 10 toques (máximo 4 níveis)
+            if self.evolution_level < 4:
+                new_level = min(4, 1 + self.tap_count // 10)
+                if new_level > self.evolution_level:
+                    self.evolution_level = new_level
+                    self._evolution_animation()
+            
+            # Aumenta velocidade com evolução (ROOOAAAR!)
+            self.velocity_x *= (1 + self.evolution_level * 0.1)
+            self.velocity_y *= (1 + self.evolution_level * 0.1)
+            
+            return True
+        
+        return super().on_touch_down(touch)
+    
+    def _evolution_animation(self):
+        """ROOOAAAR! Animação de evolução"""
+        anim = Animation(monster_size=self.monster_size * 1.2, duration=0.3)
+        anim += Animation(monster_size=self.monster_size * 0.9, duration=0.2)
+        anim.start(self)
+    
+    def roar(self):
+        """ROOOAAAR! Toca som de rugido"""
+        sound_index = min(self.evolution_level, 4)
+        if sound_index in self.roar_sounds:
+            try:
+                self.roar_sounds[sound_index].play()
+            except Exception as e:
+                print(f"⚠️ Erro ao tocar som: {e}")
+        
+        # Atualiza texto (ROOOAAAR!)
+        roar_messages = [
+            "ROOOAAAR-ZIIIMB!!!",
+            "RECICLEEEE!!!",
+            "EEEEVOLVIIII!!!",
+            "CYBER-PUUUNK!!!",
+            "🌍 SALVA O PLANETA! 🌍"
+        ]
+        self.roar_text = roar_messages[min(self.evolution_level - 1, 4)]
 
 
 class GrokzomborgApp(App):
+    """ROOOAAAR! Aplicação principal do Grokzomborg"""
+    
     def build(self):
-        self.title = "Grokzomborg Bot + Ollama"
-        return GrokzomborgWidget()
+        """ROOOAAAR! Constrói a interface"""
+        main_layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+        main_layout.canvas.before.clear()
+        
+        with main_layout.canvas.before:
+            Color(0.05, 0.15, 0.08, 1)  # Verde escuro
+            Ellipse(size=main_layout.size, pos=main_layout.pos)
+        
+        # Header com informações
+        header = BoxLayout(size_hint_y=0.1, spacing=10)
+        header.canvas.before.clear()
+        with header.canvas.before:
+            Color(0.1, 0.3, 0.15, 0.8)
+            Ellipse(size=header.size, pos=header.pos)
+        
+        level_label = Label(
+            text=f"Nível: [color=00ff00]{1}[/color]",
+            markup=True,
+            size_hint_x=0.5,
+            font_size='18sp'
+        )
+        
+        tap_label = Label(
+            text=f"Toques: [color=ffff00]{0}[/color]",
+            markup=True,
+            size_hint_x=0.5,
+            font_size='18sp'
+        )
+        
+        header.add_widget(level_label)
+        header.add_widget(tap_label)
+        
+        # Game area (ROOOAAAR!)
+        game_area = FloatLayout(size_hint_y=0.85)
+        monster = Grokzomborg()
+        game_area.add_widget(monster)
+        
+        # Atualiza labels
+        def update_labels(instance, value):
+            level_label.text = f"Nível: [color=00ff00]{monster.evolution_level}[/color]"
+            tap_label.text = f"Toques: [color=ffff00]{monster.tap_count}[/color]"
+        
+        monster.bind(evolution_level=update_labels, tap_count=update_labels)
+        
+        # Footer com info educativa
+        footer = Label(
+            text=monster.roar_text,
+            size_hint_y=0.05,
+            font_size='16sp',
+            color=(0, 1, 0.5, 1)
+        )
+        monster.bind(roar_text=lambda inst, val: setattr(footer, 'text', val))
+        
+        main_layout.add_widget(header)
+        main_layout.add_widget(game_area)
+        main_layout.add_widget(footer)
+        
+        self.title = "🌍 GROKZOMBORG - O Monstro Ecológico! 🌍"
+        
+        return main_layout
 
 
 if __name__ == '__main__':
