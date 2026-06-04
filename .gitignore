@@ -1,0 +1,46 @@
+# Grokzomborg .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Kivy / Buildozer
+.bin/
+*.apk
+*.spec
+buildozer.spec
+
+# Environment
+.env
+.venv
+env/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Dados grandes (não versionar sons grandes)
+data/sounds/*.wav
+# (se quiser versionar, remova esta linha)
