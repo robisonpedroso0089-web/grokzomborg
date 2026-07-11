@@ -390,9 +390,8 @@
                 </div>
 
                 <div class="chat-input-group">
-                    <input type="text" id="chatInput" placeholder="Fale com o monstro..." 
-                           onkeypress="if(event.key==='Enter') enviarMensagem()">
-                    <button onclick="enviarMensagem()">ENVIAR</button>
+                    <input type="text" id="chatInput" placeholder="Fale com o monstro..." autocomplete="off">
+                    <button type="button" id="chatSendBtn">ENVIAR</button>
                 </div>
             </div>
         </section>
@@ -479,6 +478,47 @@
                 }, 200);
             }
         });
+
+        // Inicialização do chat - listeners mais robustos
+        (function() {
+          const input = document.getElementById('chatInput');
+          const sendBtn = document.getElementById('chatSendBtn');
+
+          function handleSend() {
+            // reutiliza a função existir
+            if (typeof enviarMensagem === 'function') {
+              enviarMensagem();
+            } else {
+              // fallback simples caso enviarMensagem não exista
+              const container = document.getElementById('chatContainer');
+              const text = input ? input.value.trim() : '';
+              if (!text) return;
+              const userMsg = document.createElement('div');
+              userMsg.className = 'chat-message';
+              userMsg.style.color = '#00ff41';
+              userMsg.innerHTML = `<strong>👤 VOCÊ:</strong> ${text}`;
+              container.appendChild(userMsg);
+              container.scrollTop = container.scrollHeight;
+              if (input) input.value = '';
+            }
+          }
+
+          if (sendBtn) {
+            sendBtn.addEventListener('click', handleSend);
+          }
+
+          if (input) {
+            input.addEventListener('keydown', function(e) {
+              // Enter (padrão e legacy)
+              if (e.key === 'Enter' || e.keyCode === 13) {
+                e.preventDefault();
+                handleSend();
+              }
+            });
+            // opcional: focus automático
+            input.setAttribute('aria-label', 'Fale com o Grokzomborg');
+          }
+        })();
     </script>
 </body>
 </html>
