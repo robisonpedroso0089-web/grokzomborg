@@ -243,7 +243,11 @@
             padding: 10px;
             border-left: 3px solid #00ff41;
             padding-left: 15px;
+            word-break: break-word;
         }
+
+        .chat-message.bot { color: #ff00c1; }
+        .chat-message.user { color: #00ff41; }
 
         .chat-input-group {
             display: flex;
@@ -278,6 +282,13 @@
         .chat-input-group button:hover {
             background: #00ff41;
             color: #000;
+        }
+
+        .typing {
+            font-style: italic;
+            opacity: 0.8;
+            color: #00cc33;
+            margin-top: 8px;
         }
 
         footer {
@@ -384,7 +395,7 @@
                     Ele responde com rugidos e sabedoria reciclada.</p>
                 
                 <div class="chat-container" id="chatContainer">
-                    <div class="chat-message" style="color: #ff00c1;">
+                    <div class="chat-message bot" style="color: #ff00c1;">
                         <strong>🧟 GROKZOMBORG:</strong> ROOOAAAR-ZIIIMB!!! Bem-vindo ao caos!
                     </div>
                 </div>
@@ -393,6 +404,7 @@
                     <input type="text" id="chatInput" placeholder="Fale com o monstro..." autocomplete="off">
                     <button type="button" id="chatSendBtn">ENVIAR</button>
                 </div>
+                <div id="typingIndicator" class="typing" aria-live="polite" style="display:none;">GROKZOMBORG está digitando...</div>
             </div>
         </section>
 
@@ -409,7 +421,7 @@
     </div>
 
     <script>
-        // Rugidos do Grokzomborg
+        // Rugidos e respostas do Grokzomborg
         const rugidos = [
             "ROOOAAAR-ZIIIMB!!!",
             "*bip bip* GLITCH CÓSMICO!",
@@ -422,103 +434,166 @@
             "*bzzzzt* SISTEMA SOBRECARREGADO!"
         ];
 
-        function despertar() {
-            const rugido = rugidos[Math.floor(Math.random() * rugidos.length)];
-            alert(`🧟‍♂️ ${rugido}`);
-            console.log(`█ ${rugido} █`);
+        // Estado simples para a experiência web (não afeta o app Kivy)
+        let evolutionLevel = 1;
+        const MAX_EVOLUTION = 4;
+
+        // Memória do chat (últimas N falas)
+        const chatMemory = [];
+        const MEMORY_LIMIT = 8;
+
+        const chatContainer = document.getElementById('chatContainer');
+        const inputEl = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('chatSendBtn');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        // Helpers
+        function addToMemory(role, text) {
+            chatMemory.push({role, text});
+            if (chatMemory.length > MEMORY_LIMIT) chatMemory.shift();
         }
 
-        function enviarMensagem() {
-            const input = document.getElementById('chatInput');
-            const container = document.getElementById('chatContainer');
-            const mensagem = input.value.trim();
+        function sanitize(text) {
+            // simples sanitização: remove tags potencialmente perigosas
+            return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
 
+        function appendMessage(role, text) {
+            const msg = document.createElement('div');
+            msg.className = 'chat-message ' + (role === 'bot' ? 'bot' : 'user');
+
+            // Use textContent para evitar XSS (não innerHTML)
+            const strong = document.createElement('strong');
+            strong.textContent = role === 'bot' ? '🧟 GROKZOMBORG:' : '👤 VOCÊ:';
+            msg.appendChild(strong);
+
+            const spacer = document.createTextNode(' ');
+            msg.appendChild(spacer);
+
+            const textNode = document.createTextNode(text);
+            msg.appendChild(textNode);
+
+            chatContainer.appendChild(msg);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function showTyping(show) {
+            typingIndicator.style.display = show ? 'block' : 'none';
+        }
+
+        function chooseRugido() {
+            return rugidos[Math.floor(Math.random() * rugidos.length)];
+        }
+
+        // Intent matching simples
+        function detectIntent(text) {
+            const t = text.toLowerCase();
+            if (/\b(olá|ola|oi|ei|hey)\b/.test(t)) return 'greet';
+            if (/\b(despertar|acordar|wake|desperte)\b/.test(t)) return 'wake';
+            if (/\b(evolu|evolução|evolucao|evoluir|nivel)\b/.test(t)) return 'evolution';
+            if (/\b(lore|história|historia|origem)\b/.test(t)) return 'lore';
+            if (/\b(acorde|acordes|musica|chord)\b/.test(t)) return 'chords';
+            if (/\b(reciclagem|recicle|recicla|reciclar)\b/.test(t)) return 'recycle';
+            if (/\b(glitch)\b/.test(t)) return 'glitch';
+            if (/\b(ajuda|help|o que|como)\b/.test(t)) return 'help';
+            if (/\b(tchau|adeus|flw)\b/.test(t)) return 'bye';
+            return 'unknown';
+        }
+
+        function generateResponse(intent, userText) {
+            // usa intent + memória para respostas mais relevantes
+            switch (intent) {
+                case 'greet':
+                    return 'ROOOAAAR! Olá, humano reciclador. Quer despertar o monstro?';
+                case 'wake':
+                    // desperta e responde com rugido
+                    evolutionLevel = Math.min(MAX_EVOLUTION, evolutionLevel + 1);
+                    return `Despertando... ${chooseRugido()} (Nível: ${evolutionLevel})`;
+                case 'evolution':
+                    return `O Grokzomborg está no nível ${evolutionLevel}. Toque para evoluir!`;
+                case 'lore':
+                    return 'Grokzomborg nasceu do lixo e da vontade de salvar o planeta. Ele evolui com interação.';
+                case 'chords':
+                    return 'Acordes cósmicos: Cm7 - Am7 - Dm7. Experimente tocar em loop!';
+                case 'recycle':
+                    return 'Recicle: separe plástico, vidro e metal. Cada ação conta. 🌱';
+                case 'glitch':
+                    return 'Glitch ativado! Observe as distorções... *bzzzzt*';
+                case 'help':
+                    return 'Diga: "despertar", "lore", "acordes", "evolução" ou apenas diga olá!';
+                case 'bye':
+                    return 'Até mais! Que o caos reciclado te acompanhe.';
+                default:
+                    // tenta responder com algo contextual usando memória
+                    if (userText.length < 20 && /\?$/.test(userText.trim())) {
+                        return 'Pergunta interessante... mas eu respondo melhor sobre reciclagem, evolução e glitches!';
+                    }
+                    // fallback rugido com leve contexto
+                    return chooseRugido();
+            }
+        }
+
+        // Envio de mensagem com indicador de typing e memória
+        function enviarMensagem() {
+            const raw = inputEl.value || '';
+            const mensagem = raw.trim();
             if (!mensagem) return;
 
-            // Adiciona mensagem do usuário
-            const userMsg = document.createElement('div');
-            userMsg.className = 'chat-message';
-            userMsg.style.color = '#00ff41';
-            userMsg.innerHTML = `<strong>👤 VOCÊ:</strong> ${mensagem}`;
-            container.appendChild(userMsg);
+            // Adiciona mensagem do usuário (sanitize ao exibir usando textContent)
+            appendMessage('user', mensagem);
+            addToMemory('user', mensagem);
 
-            // Resposta do Grokzomborg
+            inputEl.value = '';
+            inputEl.focus();
+
+            // Detecta intent e prepara resposta
+            const intent = detectIntent(mensagem);
+
+            // Simula typing do bot (delay proporcional ao tamanho)
+            const typingDelay = Math.min(1200, 300 + mensagem.length * 20);
+            showTyping(true);
+            sendBtn.disabled = true;
+
             setTimeout(() => {
-                const rugido = rugidos[Math.floor(Math.random() * rugidos.length)];
-                const botMsg = document.createElement('div');
-                botMsg.className = 'chat-message';
-                botMsg.style.color = '#ff00c1';
-                botMsg.innerHTML = `<strong>🧟 GROKZOMBORG:</strong> ${rugido}`;
-                container.appendChild(botMsg);
-
-                // Auto-scroll
-                container.scrollTop = container.scrollHeight;
-            }, 500);
-
-            input.value = '';
-            container.scrollTop = container.scrollHeight;
+                const response = generateResponse(intent, mensagem);
+                appendMessage('bot', response);
+                addToMemory('bot', response);
+                showTyping(false);
+                sendBtn.disabled = false;
+            }, typingDelay + 400);
         }
+
+        // Listeners
+        sendBtn.addEventListener('click', enviarMensagem);
+        inputEl.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.keyCode === 13) {
+                e.preventDefault();
+                enviarMensagem();
+            }
+        });
+
+        // Inicialização do chat: boas-vindas na memória
+        addToMemory('bot', 'ROOOAAAR-ZIIIMB!!! Bem-vindo ao caos!');
 
         // Glitch effect no header ao carregar
         setTimeout(() => {
             const glitch = document.querySelector('.glitch');
-            glitch.style.animation = 'glitch 0.4s linear';
+            if (glitch) glitch.style.animation = 'glitch 0.4s linear';
         }, 800);
 
         // Easter egg - Digitar "glitch" ativa efeito especial
         let keys = [];
         document.addEventListener('keydown', (e) => {
             keys.push(e.key.toLowerCase());
-            if (keys.length > 5) keys.shift();
+            if (keys.length > 10) keys.shift();
 
             if (keys.join('').includes('glitch')) {
                 document.body.style.filter = 'hue-rotate(120deg)';
                 setTimeout(() => {
                     document.body.style.filter = 'none';
-                }, 200);
+                }, 400);
             }
         });
-
-        // Inicialização do chat - listeners mais robustos
-        (function() {
-          const input = document.getElementById('chatInput');
-          const sendBtn = document.getElementById('chatSendBtn');
-
-          function handleSend() {
-            // reutiliza a função existir
-            if (typeof enviarMensagem === 'function') {
-              enviarMensagem();
-            } else {
-              // fallback simples caso enviarMensagem não exista
-              const container = document.getElementById('chatContainer');
-              const text = input ? input.value.trim() : '';
-              if (!text) return;
-              const userMsg = document.createElement('div');
-              userMsg.className = 'chat-message';
-              userMsg.style.color = '#00ff41';
-              userMsg.innerHTML = `<strong>👤 VOCÊ:</strong> ${text}`;
-              container.appendChild(userMsg);
-              container.scrollTop = container.scrollHeight;
-              if (input) input.value = '';
-            }
-          }
-
-          if (sendBtn) {
-            sendBtn.addEventListener('click', handleSend);
-          }
-
-          if (input) {
-            input.addEventListener('keydown', function(e) {
-              // Enter (padrão e legacy)
-              if (e.key === 'Enter' || e.keyCode === 13) {
-                e.preventDefault();
-                handleSend();
-              }
-            });
-            // opcional: focus automático
-            input.setAttribute('aria-label', 'Fale com o Grokzomborg');
-          }
-        })();
     </script>
 </body>
 </html>
