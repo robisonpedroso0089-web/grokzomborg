@@ -25,7 +25,7 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # (Opcional) Para desenvolvimento
-pip install pytest black flake8 mypy
+pip install -r requirements-dev.txt
 ```
 
 ## 2. Executar a Aplicação
@@ -132,35 +132,6 @@ colors = [
 }
 ```
 
-## Feature: Adicionar Novo Efeito Glitch
-
-### 1. Criar método em `ar_camera.py`
-
-```python
-def _apply_pixelate_glitch(self, frame, pixel_size=10):
-    \"\"\"Efeito de pixelização\"\"\"
-    h, w = frame.shape[:2]
-    small = cv2.resize(frame, (w // pixel_size, h // pixel_size))
-    return cv2.resize(small, (w, h), interpolation=cv2.INTER_NEAREST)
-```
-
-### 2. Adicionar ao `_apply_glitch`
-
-```python
-if self.evolution_level >= 3:
-    frame = self._apply_pixelate_glitch(frame)
-```
-
-### 3. Testar em `tests/test_ar.py`
-
-```python
-def test_pixelate_glitch(self):
-    ar = ARCamera()
-    frame = np.random.randint(0, 255, (480, 640, 3), dtype=np.uint8)
-    result = ar._apply_pixelate_glitch(frame)
-    assert result.shape == frame.shape
-```
-
 # ============================================================================
 # 🧪 TESTES
 # ============================================================================
@@ -182,22 +153,6 @@ pytest tests/test_ar.py::TestARCamera::test_evolution_level_increase -v
 
 # Com cobertura
 pytest --cov=. tests/
-```
-
-## Escrever novo teste
-
-```python
-# Em tests/test_ar.py
-def test_novo_recurso(self):
-    \"\"\"Teste descritivo\"\"\"
-    # Arrange
-    ar = ARCamera()
-    
-    # Act
-    resultado = ar.algum_metodo()
-    
-    # Assert
-    assert resultado == esperado
 ```
 
 # ============================================================================
@@ -233,59 +188,8 @@ adb install -r bin/grokzomborg-1.1.0-debug.apk
 buildozer android debug deploy run logcat
 ```
 
-## Build para iOS
-
-```bash
-# Requer macOS
-buildozer ios debug
-
-# Deploy ao device
-buildozer ios debug deploy
-```
-
 # ============================================================================
-# 🔧 CONFIGURAÇÃO
-# ============================================================================
-
-## Configurar RA
-
-```python
-# No início de main.py
-from game_systems import ARSettings
-
-ar_settings = ARSettings()
-ar_settings.set_resolution(1280, 720)
-ar_settings.set_glitch_intensity(0.8)
-ar_settings.gesture_detection = True
-```
-
-## Configurar Som
-
-```python
-from game_systems import SoundManager
-
-sound_manager = SoundManager('assets/sounds')
-sound_manager.set_volume(0.8)
-sound_manager.play_roar(2)
-```
-
-## Configurar Jogo
-
-```python
-from game_systems import GameState, AchievementSystem
-
-game_state = GameState()
-achievements = AchievementSystem()
-
-# Salvar progresso
-game_state.save_state('meu_save.json')
-
-# Carregar
-game_state.load_state('meu_save.json')
-```
-
-# ============================================================================
-# 🐛 DEBUG & TROUBLESHOOTING
+# 🔧 DEBUG & TROUBLESHOOTING
 # ============================================================================
 
 ## Câmera não funciona
@@ -307,9 +211,6 @@ cap = cv2.VideoCapture(1)
 # Reinstalar
 pip uninstall opencv-python
 pip install opencv-python==4.8.1.78
-
-# Com contrib
-pip install opencv-contrib-python==4.8.1.78
 ```
 
 ## Kivy dá erro em mobile
@@ -322,58 +223,6 @@ rm -rf .buildozer bin dist
 buildozer android debug
 ```
 
-## Performance baixa
-
-```python
-# Reduzir resolução
-ar_settings.set_resolution(320, 240)
-
-# Desabilitar partículas
-ar_settings.particle_enabled = False
-
-# Reduzir FPS
-ar_settings.fps_target = 15
-```
-
-# ============================================================================
-# 📚 RECURSOS ÚTEIS
-# ============================================================================
-
-- [Documentação Kivy](https://kivy.org/doc/stable/)
-- [OpenCV Docs](https://docs.opencv.org/)
-- [Three.js (RA Web)](https://threejs.org/)
-- [Buildozer Docs](https://buildozer.readthedocs.io/)
-- [PyTest Guide](https://docs.pytest.org/)
-
-# ============================================================================
-# 🤝 CONTRIBUINDO
-# ============================================================================
-
-1. Fork o repositório
-2. Crie uma branch: `git checkout -b feature/MeuGlitch`
-3. Faça commits: `git commit -m 'Adicionar glitch épico'`
-4. Push: `git push origin feature/MeuGlitch`
-5. Abra um Pull Request
-
-## Checklist antes de PR
-
-- [ ] Código testado
-- [ ] Testes escritos
-- [ ] Documentação atualizada
-- [ ] Sem erros de lint (`flake8`)
-- [ ] Formatado com `black`
-- [ ] Type hints verificados com `mypy`
-
-# ============================================================================
-# 📞 SUPORTE
-# ============================================================================
-
-- Issues: https://github.com/robisonpedroso0089-web/grokzomborg/issues
-- Discussions: https://github.com/robisonpedroso0089-web/grokzomborg/discussions
-- Email: robisonpedroso0089@gmail.com
-
 ---
 
 **ROOOAAAR-ZIIIMB!!!** 🧟‍♂️⚡🌍
-
-*Obrigado por ajudar a salvar o planeta com código!*

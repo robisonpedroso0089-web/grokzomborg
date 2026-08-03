@@ -48,7 +48,6 @@ class SoundManager:
     
     def play_evolve_sound(self):
         """Toca som de evolução"""
-        # Gerar som sintetizado
         print("✨ Som de evolução!")
     
     def play_glitch_sound(self):

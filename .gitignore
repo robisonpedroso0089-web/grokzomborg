@@ -1,10 +1,14 @@
-# Grokzomborg .gitignore
-
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+
+# C extensions
+*.c
+*.so
+
+# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -18,29 +22,96 @@ parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
-# Kivy / Buildozer
-.bin/
-*.apk
+# PyInstaller
+*.manifest
 *.spec
-buildozer.spec
 
-# Environment
-.env
-.venv
-env/
+# Kivy
+*.kv~
+.kivy-launcher/
+
+# Virtual environments
 venv/
+ENV/
+env/
+.venv
 
-# OS
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
-Thumbs.db
+*.sublime-project
+*.sublime-workspace
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# OpenCV
+*.cpp
+*.hpp
+
+# Audio files (if generated)
+*.wav
+*.mp3
+
+# Build artifacts
+bin/
+obj/
+*.o
+*.a
+*.dylib
+
+# Buildozer
+.buildozer/
+bin/
+*.apk
+*.aab
+
+# Android
+android-ndk/
+android-sdk/
+
+# iOS
+ios/
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
 
 # Logs
 *.log
+logs/
 
-# Dados grandes (não versionar sons grandes)
-data/sounds/*.wav
-# (se quiser versionar, remova esta linha)
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment
+.env
+.env.local
+
+# Project specific
+assets/models/*.glb
+assets/models/*.gltf
+outputs/
+results/
+cache/
+
+# Git
+.git/
+.gitattributes
