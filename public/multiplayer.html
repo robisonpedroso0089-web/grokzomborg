@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GrokZomborg - Multiplayer (Scaffold)</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding: 16px; }
+    #game { border: 1px solid #ccc; background: #111; display:block; margin-top:12px }
+    #players { margin-top:12px }
+    .player { color: #fff; padding:4px }
+    #controls { margin-top:8px }
+    button { margin-right:8px }
+    #status { font-weight:600 }
+  </style>
+</head>
+<body>
+  <h1>Multiplayer — Scaffold (Socket.IO)</h1>
+  <p>Arquivo de scaffold para testar um multiplayer básico usando Socket.IO. Referência: issue #34</p>
+
+  <div id="status">Status: <span id="conn">desconectado</span></div>
+  <div id="controls">
+    <button id="connectBtn">Conectar</button>
+    <button id="disconnectBtn" disabled>Desconectar</button>
+  </div>
+
+  <div id="players"><strong>Jogadores:</strong><div id="playersList"></div></div>
+
+  <canvas id="game" width="800" height="450"></canvas>
+
+  <!-- O cliente Socket.IO normalmente é servido pelo servidor em /socket.io/socket.io.js -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // Configurações simples
+    const connectBtn = document.getElementById('connectBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    const connSpan = document.getElementById('conn');
+    const playersList = document.getElementById('playersList');
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+
+    let socket = null;
+    let clientId = null;
+    let state = { players: {} };
+
+    function render() {
+      // Clear
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      // Background
+      ctx.fillStyle = '#071018';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      // Render players
+      for (const id in state.players) {
+        const p = state.players[id];
+        ctx.fillStyle = p.color || '#0f0';
+        ctx.beginPath();
+        ctx.arc(p.x || 50, p.y || 50, 12, 0, Math.PI*2);
+        ctx.fill();
+
+        // label
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px sans-serif';
+        ctx.fillText(id === clientId ? `${p.name || 'Você'} (eu)` : (p.name || id), (p.x || 50) + 16, (p.y || 50));
+      }
+    }
+
+    function updatePlayersList() {
+      playersList.innerHTML = '';
+      for (const id in state.players) {
+        const p = state.players[id];
+        const div = document.createElement('div');
+        div.className = 'player';
+        div.textContent = `${id === clientId ? '(Você) ' : ''}${p.name || id} — x:${Math.round(p.x||0)} y:${Math.round(p.y||0)}`;
+        playersList.appendChild(div);
+      }
+    }
+
+    function setConnected(connected) {
+      connSpan.textContent = connected ? 'conectado' : 'desconectado';
+      connectBtn.disabled = connected;
+      disconnectBtn.disabled = !connected;
+    }
+
+    connectBtn.addEventListener('click', () => {
+      if (socket) return;
+      // Conecta ao mesmo host/origem. Se o servidor Socket.IO estiver em outro lugar, troque a URL.
+      socket = io();
+
+      socket.on('connect', () => {
+        clientId = socket.id;
+        setConnected(true);
+        console.log('Conectado como', clientId);
+        // Request initial state
+        socket.emit('requestState');
+      });
+
+      socket.on('disconnect', (reason) => {
+        console.log('Desconectado', reason);
+        setConnected(false);
+        socket = null;
+        clientId = null;
+        state = { players: {} };
+        updatePlayersList();
+        render();
+      });
+
+      // Evento de estado enviado pelo servidor com posições de jogadores
+      socket.on('state', (s) => {
+        state = s || { players: {} };
+        updatePlayersList();
+        render();
+      });
+
+      // Atualizações parciais (ex.: jogador se moveu)
+      socket.on('player:update', (player) => {
+        if (!player || !player.id) return;
+        state.players[player.id] = Object.assign(state.players[player.id]||{}, player);
+        updatePlayersList();
+        render();
+      });
+
+      // Remoção
+      socket.on('player:remove', (id) => {
+        delete state.players[id];
+        updatePlayersList();
+        render();
+      });
+
+      // Mensagens de depuração do servidor
+      socket.on('message', console.log);
+    });
+
+    disconnectBtn.addEventListener('click', () => {
+      if (!socket) return;
+      socket.disconnect();
+      socket = null;
+      setConnected(false);
+    });
+
+    // Controle simples por teclado para demonstrar movimento
+    const speed = 4;
+    window.addEventListener('keydown', (e) => {
+      if (!socket) return;
+      let dir = null;
+      if (e.key === 'ArrowUp' || e.key === 'w') dir = { dy: -speed };
+      if (e.key === 'ArrowDown' || e.key === 's') dir = { dy: speed };
+      if (e.key === 'ArrowLeft' || e.key === 'a') dir = { dx: -speed };
+      if (e.key === 'ArrowRight' || e.key === 'd') dir = { dx: speed };
+      if (!dir) return;
+      // Emitir evento simples para que o servidor mova o jogador e retransmita
+      socket.emit('input:move', dir);
+    });
+
+    // Loop de render (por segurança, caso não haja updates frequentes)
+    setInterval(render, 1000/30);
+
+    // Mensagem de instrução no console
+    console.log('Página de scaffold multiplayer carregada. Clique em Conectar. Use as setas/WASD para enviar movimentos.');
+  </script>
+</body>
+</html>
