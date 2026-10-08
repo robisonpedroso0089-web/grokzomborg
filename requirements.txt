@@ -1,11 +1,11 @@
-# 🌍 GROKZOMBORG - Requirements (v1.1.0+)
-# ROOOAAAR! Dependências do projeto com Realidade Aumentada
+# 🌍 GROKZOMBORG - Requirements (v1.2.0+)
+# ROOOAAAR! Dependências do projeto com Realidade Aumentada + Ollama
 
 # Core Framework
 kivy==2.3.0
 kivy-garden>=0.1.5
 
-# Realidade Aumentada & Câmera (NOVO!)
+# Realidade Aumentada & Câmera
 opencv-python>=4.8.1
 opencv-contrib-python>=4.8.1
 numpy>=1.24.3
@@ -36,9 +36,9 @@ plyer>=2.1.0
 six>=1.16.0
 charset-normalizer>=3.2.0
 
-# Opcional: IA & Chat
-# ollama>=0.0.48  # Descomente para integração Ollama
-# langchain>=0.0.298  # Descomente para chat avançado
+# IA Local com Ollama
+ollama>=0.1.0
+python-dotenv>=1.0.0
 
 # Desenvolvimento & Testes
 pytest>=7.4.0
