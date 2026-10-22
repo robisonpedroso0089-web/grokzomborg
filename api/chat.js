@@ -1,8 +1,4 @@
-// Vercel Serverless Function (Node 18+)
-// File: api/chat.js
-
 export default async function handler(req, res) {
-  // Allow CORS for development (adjust in production)
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -18,49 +14,616 @@ export default async function handler(req, res) {
 
   try {
     const body = req.body || {};
-    const messages = body.messages || [];
-    const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
-    const apiKey = process.env.OPENAI_API_KEY;
+    const messages = Array.isArray(body.messages) ? body.messages : [];
+    const ollamaHost = process.env.OLLAMA_HOST || 'http://localhost:11434';
+    const model = process.env.OLLAMA_MODEL || 'mistral';
+    const temperature = Number(process.env.OLLAMA_TEMPERATURE || 0.8);
 
-    if (!apiKey) {
-      return res.status(500).json({ error: 'OPENAI_API_KEY not configured' });
-    }
+    const systemPrompt = `Você é o Grokzomborg, um monstro reciclado, eco-friendly e cyberpunk. Responda em português, seja educativo, divertido, curto e com personalidade de glitch. Fale sobre sustentabilidade, reciclagem, tecnologia e comportamento ecológico.`;
 
-    // Build system prompt persona
-    const systemPrompt = `You are Grokzomborg, an eco-friendly, slightly glitchy, playful monster who teaches about recycling and answers with short, friendly, and sometimes humorous responses. Keep replies concise (one or two short paragraphs), include a hint about recycling when appropriate, and use a whimsical tone. If asked to "despertar" (wake) or "evoluir" (evolve), acknowledge and output a short celebratory line. Avoid profanity.`;
+    const payload = {
+      model,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        ...messages.slice(-12).map((msg) => ({
+          role: msg.role === 'bot' ? 'assistant' : 'user',
+          content: String(msg.text || msg.content || '')
+        }))
+      ],
+      stream: false,
+      options: {
+        temperature
+      }
+    };
 
-    const apiMessages = [
-      { role: 'system', content: systemPrompt },
-      // Map the lightweight chat memory into assistant/user messages
-      ...messages.slice(-12).map(m => ({ role: m.role === 'bot' ? 'assistant' : 'user', content: m.text }))
-    ];
-
-    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch(`${ollamaHost.replace(/\/$/, '')}/api/chat`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        model,
-        messages: apiMessages,
-        max_tokens: 300,
-        temperature: 0.8
-      })
+      body: JSON.stringify(payload)
     });
 
-    if (!resp.ok) {
-      const text = await resp.text();
-      return res.status(resp.status).json({ error: 'OpenAI API error', detail: text });
+    if (!response.ok) {
+      const detail = await response.text();
+      return res.status(503).json({
+        error: 'OLLAMA_UNAVAILABLE',
+        detail: detail || 'Ollama não está respondendo ou não foi inicializado.'
+      });
     }
 
-    const data = await resp.json();
-    const reply = data?.choices?.[0]?.message?.content || '';
-    const usage = data?.usage || null;
+    const data = await response.json();
+    const reply = data?.message?.content || data?.response || '';
 
-    return res.status(200).json({ reply, usage });
-  } catch (err) {
-    console.error('Error in /api/chat:', err);
-    return res.status(500).json({ error: 'Server error', detail: String(err) });
+    return res.status(200).json({
+      reply,
+      usage: data?.usage || null,
+      model
+    });
+  } catch (error) {
+    console.error('Grokzomborg /api/chat error:', error);
+    return res.status(500).json({
+      error: 'SERVER_ERROR',
+      detail: String(error)
+    });
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+n
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+a
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+n
+"}]}  
