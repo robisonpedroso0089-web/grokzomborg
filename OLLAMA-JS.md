@@ -1,109 +1,140 @@
-# Ollama JavaScript no GROKZOMBORG
+# Chat com Ollama e Node.js
 
-Este guia resume como usar o cliente JavaScript oficial do Ollama e como isso se relaciona com o chat deste projeto.
+Este guia mostra como executar um chat de terminal com o Ollama, usando um modelo local, histórico de conversa e respostas em streaming.
 
-## Requisitos
+## 1. Prepare o Ollama
 
-- Node.js e npm para instalar e compilar o cliente JavaScript.
-- Ollama instalado e em execução.
-- Um modelo baixado localmente, por exemplo `mistral`.
+Instale o [Ollama](https://ollama.com/download) e baixe um modelo:
+
+```bash
+ollama pull llama3.1
+```
+
+Se o computador tiver pouca memória, use um modelo menor, por exemplo `llama3.2:1b`. Use o mesmo nome de modelo no comando `ollama pull` e no código abaixo.
+
+O Ollama normalmente inicia o serviço automaticamente. Se não estiver em execução, abra outro terminal e rode:
 
 ```bash
 ollama serve
 ```
 
-Em outro terminal:
+O endereço local padrão é `http://127.0.0.1:11434`.
+
+## 2. Configure o projeto Node.js
+
+Na pasta do repositório, instale as dependências do chat:
 
 ```bash
-ollama pull mistral
-ollama run mistral
-```
-
-O serviço local padrão do Ollama fica em `http://localhost:11434`.
-
-## Instalar a biblioteca
-
-Na raiz do seu projeto JavaScript:
-
-```bash
+npm init -y
+npm pkg set type=module
 npm install ollama
 ```
 
-## Exemplo no Node.js
+> Se o projeto já tiver `package.json`, não execute `npm init -y`; apenas ajuste `"type": "module"` se necessário e instale `ollama`.
 
-```javascript
-import ollama from 'ollama'
-
-const response = await ollama.chat({
-  model: 'mistral',
-  messages: [{ role: 'user', content: 'Como posso reciclar em casa?' }],
-})
-
-console.log(response.message.content)
-```
-
-Para usar outro host Ollama:
+## 3. Crie `chat-terminal.js`
 
 ```javascript
 import { Ollama } from 'ollama'
+import { createInterface } from 'node:readline/promises'
+import { stdin, stdout } from 'node:process'
 
-const client = new Ollama({ host: 'http://127.0.0.1:11434' })
-const response = await client.chat({
-  model: 'mistral',
-  messages: [{ role: 'user', content: 'Olá, Grokzomborg!' }],
+const client = new Ollama({
+  host: process.env.OLLAMA_HOST || 'http://127.0.0.1:11434',
 })
+const model = process.env.OLLAMA_MODEL || 'llama3.1'
+const terminal = createInterface({ input: stdin, output: stdout })
+const messages = [
+  {
+    role: 'system',
+    content:
+      'Você é o Grokzomborg, um monstro reciclado prestativo. Responda em português com humor leve e dicas educativas sobre sustentabilidade.',
+  },
+]
 
-console.log(response.message.content)
-```
+async function main() {
+  console.log(`🧟 Chat GROKZOMBORG (${model}) — digite "sair" para encerrar.\n`)
 
-## Streaming no Node.js
+  try {
+    while (true) {
+      const input = (await terminal.question('Você: ')).trim()
+      if (input.toLowerCase() === 'sair') break
+      if (!input) continue
 
-```javascript
-import ollama from 'ollama'
+      messages.push({ role: 'user', content: input })
+      let answer = ''
 
-const response = await ollama.chat({
-  model: 'mistral',
-  messages: [{ role: 'user', content: 'Explique compostagem.' }],
-  stream: true,
-})
+      try {
+        const stream = await client.chat({ model, messages, stream: true })
+        stdout.write('GROKZOMBORG: ')
 
-for await (const part of response) {
-  process.stdout.write(part.message.content)
+        for await (const part of stream) {
+          const token = part.message?.content || ''
+          answer += token
+          stdout.write(token)
+        }
+
+        messages.push({ role: 'assistant', content: answer })
+        stdout.write('\n\n')
+      } catch (error) {
+        // Não deixa uma pergunta sem resposta no histórico da conversa.
+        messages.pop()
+        console.error('\nNão foi possível consultar o Ollama:', error.message, '\n')
+      }
+    }
+  } finally {
+    terminal.close()
+  }
 }
+
+main().catch((error) => {
+  console.error('Erro:', error.message)
+  process.exitCode = 1
+})
 ```
 
-## Uso no navegador
+## 4. Inicie o chat
 
-A biblioteca disponibiliza um módulo para navegador:
-
-```javascript
-import ollama from 'ollama/browser'
-```
-
-Esse import precisa ser processado por uma ferramenta de build JavaScript (por exemplo, Vite); não funciona diretamente como script clássico sem bundler. O navegador também precisa conseguir acessar o servidor Ollama local e suas regras de CORS/rede precisam permitir essa conexão.
-
-**Não coloque chaves de API no JavaScript enviado ao navegador.** Para Ollama Cloud, faça as requisições em um backend e mantenha `OLLAMA_API_KEY` somente como variável de ambiente do servidor.
-
-## Como o chat deste repositório se conecta
-
-A página `index.html` envia as mensagens para `/api/chat`. O arquivo `api/chat.js` é uma função de servidor que encaminha a conversa para Ollama, usando estas variáveis de ambiente:
-
-```env
-OLLAMA_HOST=http://localhost:11434
-OLLAMA_MODEL=mistral
-OLLAMA_TEMPERATURE=0.8
-```
-
-A rota `/api/chat` precisa ser executada em um ambiente que ofereça suporte a funções de servidor e tenha acesso ao Ollama. **GitHub Pages e `python -m http.server` servem arquivos estáticos; não executam `api/chat.js`.** Portanto, abrir `http://localhost:8000` disponibiliza a página, mas não inicia nem a API nem o Ollama.
-
-Para servir apenas a página localmente:
+Certifique-se de que o Ollama está em execução e que o modelo foi baixado. Então rode:
 
 ```bash
-python -m http.server 8000
+node chat-terminal.js
 ```
 
-Acesse `http://localhost:8000`. Para conversas com IA, inicie também o Ollama e execute a função `/api/chat` por meio de um backend compatível, configurando as variáveis de ambiente acima.
+Para escolher outro modelo instalado:
 
-## Mais recursos da biblioteca
+```bash
+OLLAMA_MODEL=llama3.2:1b node chat-terminal.js
+```
 
-O cliente oficial também oferece geração de texto, listagem e gerenciamento de modelos, embeddings, chamadas de ferramentas e respostas em streaming. Consulte a documentação do pacote `ollama` e a referência da API Ollama para detalhes e compatibilidade de cada modelo.
+No PowerShell:
+
+```powershell
+$env:OLLAMA_MODEL="llama3.2:1b"
+node chat-terminal.js
+```
+
+O histórico é mantido somente durante a execução atual do terminal.
+
+## Ollama Cloud (opcional)
+
+Para usar a API Cloud, crie uma chave no painel do Ollama e configure `OLLAMA_API_KEY` como variável de ambiente. Não salve a chave no código nem a envie ao navegador.
+
+No Node.js, crie o cliente usando a chave do ambiente:
+
+```javascript
+const client = new Ollama({
+  host: 'https://ollama.com',
+  headers: {
+    Authorization: `Bearer ${process.env.OLLAMA_API_KEY}`,
+  },
+})
+```
+
+Use um modelo Cloud disponível na sua conta, como `gpt-oss:120b`, na opção `model` da chamada `client.chat`.
+
+## Diferença para o chat do site
+
+Este exemplo é um chat de terminal independente. O site do GROKZOMBORG envia as mensagens para `/api/chat`, implementado em `api/chat.js`; essa rota precisa rodar num backend compatível, configurado com `OLLAMA_HOST`, `OLLAMA_MODEL` e `OLLAMA_TEMPERATURE`.
+
+GitHub Pages e `python -m http.server 8000` servem arquivos estáticos e **não executam** `api/chat.js`. O servidor HTTP Python permite abrir a interface local em `http://localhost:8000`, mas para usar IA no chat do site é necessário iniciar também a API num ambiente de servidor com acesso ao Ollama.
